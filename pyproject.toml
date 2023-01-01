@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "twitter"
+version = "0.1.0"
+description = "Django Twitter Demo"
+authors = ["therealriteshkudalkar <ritesh.22@mountblue.tech>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+gunicorn = "^20.1.0"
+cloudinary = "^1.30.0"
+dj-database-url = "^1.2.0"
+python-dotenv = "^0.21.0"
+django = "^4.1.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
