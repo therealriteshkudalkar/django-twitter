@@ -13,6 +13,7 @@ dj-database-url = "^1.2.0"
 python-dotenv = "^0.21.0"
 django = "^3.2.9"
 psycopg2 = "^2.9.5"
+whitenoise = "^6.2.0"
 
 [build-system]
 requires = ["poetry-core"]
