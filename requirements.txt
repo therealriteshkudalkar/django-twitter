@@ -1,0 +1,4 @@
+cloudinary==1.30.0
+dj_database_url==1.2.0
+Django==4.1.4
+python-dotenv==0.21.0
