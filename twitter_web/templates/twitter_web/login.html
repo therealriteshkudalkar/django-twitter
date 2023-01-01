@@ -1,0 +1,40 @@
+{% include 'twitter_web/include/head.html' with title='Login' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/register.css' %}">
+</head>
+<body>
+    <header class="main-header">
+        <img class="main-header__image" src="{% static 'twitter_web/assets/twitter.png' %}">
+    </header>
+    <section class="main-content">
+        <div class="main-content__title-section">
+            <h2 class="main-content__title">Login</h2>
+        </div>
+        {% if error_message %}
+            <div>
+                <p class="main-content__error-message">{{ error_message }}</p>
+            </div>
+        {% endif %}
+        <article class="main-content__form-section">
+            <form class="main-content__form" action="/login" method="POST">
+                {% csrf_token %}
+
+                <div class="main-content__form-block">
+<!--                    <label for="fname">First Name</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="Email or username" name="email_or_username" id="email_or_username">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="lname">Last Name</label>-->
+                    <input class="main-content__form-input" type="password" placeholder="Password" name="password" id="password">
+                </div>
+                <div class="main-content__form-block">
+                    <input type="submit" class="main-content__form-button" value="Login">
+                </div>
+                <div class="main-content__form-block">
+                    <button class="main-content__form-button main-content__form-button--light ">Register</button>
+                </div>
+            </form>
+        </article>
+    </section>
+{% include 'twitter_web/include/footer.html' %}

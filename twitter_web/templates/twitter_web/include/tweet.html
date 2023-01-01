@@ -1,0 +1,55 @@
+<article>
+  {% if is_retweeted: %}
+    <div>
+      <span>Retweet Symbol</span>
+      <p>Retweeted By</p>
+    </div>
+  {% endif %}
+  <div>
+    <div>
+      <img>
+    </div>
+    <div>
+      <div>
+        <p>Name</p>
+        <p>Username</p>
+        <p>Tweet age</p>
+      </div>
+      <div>
+        <p>Tweet Text</p>
+        <div>
+          <img>
+          <img>
+          <img>
+          <img>
+        </div>
+        {% if quoted_tweet: %}
+        <div>
+          {% include 'twitter_web/include/quoted_tweet.html' %}
+        </div>
+        {% endif %}
+      </div>
+      <div>
+        <div>
+          <span>Impressions</span>
+          <span>Numbers</span>
+        </div>
+        <div>
+          <span>Comments Icon</span>
+          <span>Numbers</span>
+        </div>
+        <div>
+          <span>Retweets Icon</span>
+          <span>Numbers</span>
+        </div>
+        <div>
+          <span>Likes Icon</span>
+          <span>Numbers</span>
+        </div>
+        <div>
+          <span>Share Link</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>

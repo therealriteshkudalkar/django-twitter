@@ -1,0 +1,73 @@
+{% include 'twitter_web/include/head.html' with title='Sign up' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/register.css' %}">
+</head>
+<body>
+    <header class="main-header">
+        <img class="main-header__image" src="{% static 'twitter_web/assets/twitter.png' %}">
+    </header>
+    <section class="main-content">
+        <div class="main-content__title-section">
+            <h2 class="main-content__title">Create new account</h2>
+        </div>
+        {% if error_message %}
+            <div>
+                <p class="main-content__error-message">{{ error_message }}</p>
+            </div>
+        {% endif %}
+        <article class="main-content__form-section">
+            <form class="main-content__form" action="/register" method="POST">
+                {% csrf_token %}
+
+                <div class="main-content__form-block">
+<!--                    <label for="fname">First Name</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="First name" name="fname" id="fname">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="lname">Last Name</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="Last name" name="lname" id="lname">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="date_of_birth">Date of birth</label>-->
+                    <input class="main-content__form-input" type="date" name="date_of_birth" id="date_of_birth">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="email">Email</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="Email" name="email" id="email">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="username">Username</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="Username" name="username" id="username">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="password">Password</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="Password" name="password" id="password">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="confirm_password">Confirm Password</label>-->
+                    <input class="main-content__form-input" type="text" placeholder="Confirm Password" name="confirm_password" id="confirm_password">
+                </div>
+
+                <div class="main-content__form-block">
+<!--                    <label for="country">Country</label>-->
+                    <select class="main-content__form-select" id="country" name="country">
+                        <option value="Afghanistan">Afghanistan</option>
+                    </select>
+                </div>
+
+                <div class="main-content__form-block">
+                    <input type="submit" class="main-content__form-button" value="Register"></input>
+                </div>
+                <div class="main-content__form-block">
+                    <button class="main-content__form-button main-content__form-button--light ">Log in</button>
+                </div>
+            </form>
+        </article>
+    </section>
+{% include 'twitter_web/include/footer.html' %}

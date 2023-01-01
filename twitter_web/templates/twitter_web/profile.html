@@ -1,0 +1,71 @@
+{% include 'twitter_web/include/head.html' with title='Login' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+</head>
+<body>
+  <aside>
+    <header>
+      <img>
+    </header>
+    <ul>
+      <div>
+        <img>
+        <a></a>
+      </div>
+    </ul>
+  </aside>
+
+  <main>
+    <header>
+      <div>
+        <button></button>
+      </div>
+      <div>
+        <h2>Name of User</h2>
+        <p>Tweet Count</p>
+      </div>
+    </header>
+    <section>
+      <img>
+      <img>
+    </section>
+    <section>
+      <div>
+        <h2>Name of Person</h2>
+        <span>Optional Tick</span>
+      </div>
+      <div>
+        <p>Bio</p>
+      </div>
+      <div>
+        <span>Location Icon</span>
+        <p>Country</p>
+      </div>
+      <div>
+        <span>Joined month and year</span>
+      </div>
+      <div>
+        <div>
+          <p>Following Count</p>
+          <p>Following</p>
+        </div>
+        <div>
+          <p>Followers Count</p>
+          <p>Followers</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside>
+    <div>
+      <input>
+    </div>
+  </aside>
+  <section>
+    {% for tweet in tweets: %}
+      {% include 'twitter_web/include/tweet.html' with tweet_t=tweet %}
+    {% endfor %}
+  </section>
+
+{% include 'twitter_web/include/footer.html' %}
