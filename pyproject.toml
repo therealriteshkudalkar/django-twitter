@@ -12,6 +12,7 @@ cloudinary = "^1.30.0"
 dj-database-url = "^1.2.0"
 python-dotenv = "^0.21.0"
 django = "^3.2.9"
+psycopg2 = "^2.9.5"
 
 [build-system]
 requires = ["poetry-core"]
