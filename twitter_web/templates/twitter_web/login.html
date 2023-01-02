@@ -16,7 +16,7 @@
             </div>
         {% endif %}
         <article class="main-content__form-section">
-            <form class="main-content__form" action="/login" method="POST">
+            <form class="main-content__form" action="/login" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 <div class="main-content__form-block">

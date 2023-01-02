@@ -44,7 +44,7 @@
   <main>
     <header>
       <div>
-        <button></button>
+        <a href="{% url 'twitter_web:search' %}"><img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}"></a>
       </div>
       <div>
         <h2>
@@ -65,7 +65,7 @@
           <img>
         </div>
         <div>
-          <button><span>...</span></button>
+          <button><img src="{% static 'twitter_web/assets/icons/icons8-menu-vertical-100.png' %}"></button>
           <form>
             {% csrf_token %}
             {% if user.is_same_user %}
@@ -118,7 +118,7 @@
   {% verbatim %}
   <aside>
     <div>
-      <input>
+      <input type="text">
     </div>
   </aside>
   <section>

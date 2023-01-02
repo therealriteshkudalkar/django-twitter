@@ -4,7 +4,7 @@ from cloudinary import uploader
 from datetime import datetime
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 
 from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, TweetImage, Message, Like, Impression
@@ -143,7 +143,7 @@ def login(request):
 
 
 def logout(request):
-    if request.method == 'GET':
+    if request.method == 'POST':
         if request.session.get("username"):
             request.session.pop("username")
             return HttpResponseRedirect(reverse('twitter_web:search'))
@@ -199,7 +199,7 @@ def profile(request, username):
                 except User.DoesNotExist:
                     # show error on search page
                     request.session["error_message"] = 'No such user found!'
-                    return HttpResponseRedirect(reverse('search_page'))
+                    return HttpResponseRedirect(reverse('twitter_web:search'))
 
                 if profile_user.is_account_private:
                     # check if session user is one of the followers
@@ -254,7 +254,8 @@ def edit_profile(request):
         session_username = request.session.get("username")
         if session_username:
             # show the edit page with values filled already
-            pass
+            template_context = {}
+            return render(request, 'twitter_web/edit_profile.html', context=template_context)
         else:
             # redirect to search page
             return HttpResponseRedirect(reverse('search_page'))
@@ -273,43 +274,144 @@ def search(request):
         # check if there is any user error
         # if yes, then show that error on search page
         # else show the trending page
-        pass
+        error_message = request.session.get("error_message")
+        if error_message:
+            template_context = {
+                'error_message': error_message,
+            }
+        else:
+            template_context = {}
+        return render(request, 'twitter_web/search.html', context=template_context)
     else:
-        # check if there
+        # perform the search query
+        query = request.POST.get("search")
+        # you can use like command from postgresql
+        template_context = {}
+        return render(request, 'twitter_web/search.html', context=template_context)
+
+
+def follow(request):
+    if request.method == "POST":
+        session_username = request.session.get("username")
+        try:
+            session_user = User.objects.get(username=session_username)
+        except User.DoesNotExist:
+            return JsonResponse(data={
+                'response': 'error'
+            }, safe=False)
+
+        username_being_followed = request.POST.get("followee_id")
+        try:
+            user_being_followed = User.objects.get(username=username_being_followed)
+        except User.DoesNotExist:
+            return JsonResponse(data={
+                'response': 'error'
+            }, safe=False)
+
+        if session_username:
+            # create new follow
+            new_follow = Follow.objects.create(
+                follower_id=session_user,
+                followee_id=user_being_followed
+            )
+            response = {
+                'response': 'successful'
+            }
+        else:
+            # user has to login first
+            response = {
+                'response': 'login'
+            }
+        return JsonResponse(data=response, safe=False)
+
+
+def unfollow(request):
+    if request.method == "POST":
+        session_username = request.session.get("username")
+        if session_username:
+            try:
+                session_user = User.objects.get(username=session_username)
+            except User.DoesNotExist:
+                return JsonResponse(data={
+                    'response': 'error'
+                }, safe=False)
+
+            username_being_followed = request.POST.get("followee_id")
+            try:
+                user_being_followed = User.objects.get(username=username_being_followed)
+            except User.DoesNotExist:
+                return JsonResponse(data={
+                    'response': 'error'
+                }, safe=False)
+
+            # if follow exist delete it
+            try:
+                follow_to_remove = Follow.objects.get(
+                    follower_id=session_username,
+                    followee_id=username_being_followed,
+                )
+                follow_to_remove.delete()
+                response = {
+                    'response': 'successful'
+                }
+            except Follow.DoesNotExist:
+                response = {
+                    'response': 'error'
+                }
+            return JsonResponse(data=response, safe=False)
+        else:
+            return JsonResponse(data={
+                'response': 'login'
+            }, safe=False)
+
+
+def tweet(request, tweet_id):
+    if request.method == "GET":
         pass
 
 
 def notification(request):
-    pass
+    if request.method == "GET":
+        pass
 
 
 def timeline(request, profile_id):
-    # if user is logged in then show timeline else redirect to search page
-    pass
+    if request.method == "GET":
+        # if user is logged in then show timeline else redirect to search page
+        pass
 
 
 def retweet(request):
     # if user is logged in the add retweet to their tweets
     # else ask them to login
-    pass
+    if request.method == "POST":
+        pass
 
 
 def like(request):
     # if user is logged in the add retweet to their tweets
     # else ask them to login
-    pass
+    if request.method == "POST":
+        pass
 
 
 def impression(request):
     # register impression event if user is not logged in
-    pass
+    if request.method == "POST":
+        pass
 
 
 def bookmark(request):
     # if user is logged in then show bookmark page else redirect them to login page
-    pass
+    if request.method == "GET":
+        pass
+    else:
+        pass
 
 
 def message(request):
     # if user is logged in then show messages page else redirect them to login page
-    pass
+    if request.method == "GET":
+        pass
+    else:
+        pass
