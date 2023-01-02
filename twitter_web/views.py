@@ -4,12 +4,16 @@ from cloudinary import uploader
 from datetime import datetime
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, reverse
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 
 from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, TweetImage, Message, Like, Impression
 
 # uploader.upload(request.FILES['file'])
+
+
+def get_200(request):
+    return HttpResponse(status=200)
 
 
 def error_404(request, exception, template_name='twitter_web/404.html'):

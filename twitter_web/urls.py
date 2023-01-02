@@ -26,4 +26,5 @@ urlpatterns = [
     path('impression', views.impression, name='impression'),
     path('bookmark', views.bookmark, name='bookmark'),  # use it for both fetching and saving bookmarks
     path('messages', views.message, name='message'),
+    path('200', views.get_200, name='200'),
 ]
