@@ -5,13 +5,39 @@
 <body>
   <aside>
     <header>
-      <img>
+      <img src="{% static 'twitter_web/assets/twitter.png' %}">
     </header>
     <ul>
       <div>
-        <img>
-        <a></a>
+        <a href="/search"><img src="{% static 'twitter_web/assets/icons/icons8-search-96.png' %}"></a>
       </div>
+      {% if user.is_logged_in %}
+        <div>
+          <a href="/timeline/{{ user.username }}"><img src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}"></a>
+        </div>
+        <div>
+          <a href="/notification/{{ user.username }}"><img src="{% static 'twitter_web/assets/icons/icons8-notification-96.png' %}"></a>
+        </div>
+        <div>
+          <a href="/bookmark"><img src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}"></a>
+        </div>
+        <div>
+          <a href="/messages"><img src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}"></a>
+        </div>
+        <div>
+          <a href="/profile/{{ user.username }}"><img src="{% static 'twitter_web/assets/icons/icons8-administrator-male-96.png' %}"></a>
+        </div>
+      {% endif %}
+      <div>
+        <a><img src="{% static 'twitter_web/assets/icons/icons8-settings-96.png' %}"></a>
+      </div>
+      {% if user.is_logged_in %}
+        <div>
+          <div>
+            <a href="{% url 'twitter_web:search' %}"><img src="{% static 'twitter_web/assets/icons/icons8-leaf-96.png' %}"></a>
+          </div>
+        </div>
+      {% endif %}
     </ul>
   </aside>
 
@@ -21,42 +47,75 @@
         <button></button>
       </div>
       <div>
-        <h2>Name of User</h2>
-        <p>Tweet Count</p>
+        <h2>
+          {{ user.fname }} {{user.lname }}
+          {% if user.is_verified %}
+            <span><img src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
+          {% endif %}
+        </h2>
+        <p>{{ user.tweet_count }}</p>
       </div>
     </header>
     <section>
-      <img>
-      <img>
+      <div>
+        <img>
+      </div>
+      <div>
+        <div>
+          <img>
+        </div>
+        <div>
+          <button><span>...</span></button>
+          <form>
+            {% csrf_token %}
+            {% if user.is_same_user %}
+              <a href="/edit_profile">Edit Profile</a>
+            {% else %}
+              {% if user.is_follower %}
+                <input type="submit" name="follow_value" value="Unfollow">
+              {% else %}
+                <input type="hidden" name="follow_value" value="Follow">
+              {% endif %}
+            {% endif %}
+            <input type="hidden" name="follower" value="{{ user.visitor }}">
+            <input type="hidden" name="profile" value="{{ user.username }}">
+          </form>
+        </div>
+      </div>
     </section>
     <section>
       <div>
-        <h2>Name of Person</h2>
-        <span>Optional Tick</span>
+        <h2>
+          {{ user.fname }} {{ user.lname }}
+
+        </h2>
+        {% if user.is_verified %}
+            <span><img src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
+        {% endif %}
       </div>
       <div>
         <p>Bio</p>
       </div>
       <div>
-        <span>Location Icon</span>
-        <p>Country</p>
+        <span><img src="{% static 'twitter_web/assets/icons/icons8-visit-96.png' %}"></span>
+        <p>{{ user.country }}</p>
       </div>
       <div>
-        <span>Joined month and year</span>
+        <span>{{ user.joined_month }} {{ user.joined_year }}</span>
       </div>
       <div>
         <div>
-          <p>Following Count</p>
+          <p>{{ user.following_count }}</p>
           <p>Following</p>
         </div>
         <div>
-          <p>Followers Count</p>
+          <p>{{ user.follower_count }}</p>
           <p>Followers</p>
         </div>
       </div>
     </section>
   </main>
-
+  {% verbatim %}
   <aside>
     <div>
       <input>
@@ -66,6 +125,8 @@
     {% for tweet in tweets: %}
       {% include 'twitter_web/include/tweet.html' with tweet_t=tweet %}
     {% endfor %}
-  </section>
+  </section> -->
+
+  {% endverbatim %}
 
 {% include 'twitter_web/include/footer.html' %}

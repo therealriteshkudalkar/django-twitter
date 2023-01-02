@@ -15,6 +15,8 @@ urlpatterns = [
     path('profile/<username>', views.profile, name='profile'),
     # Approved only if the respective user is authorized in otherwise redirect to 404
     path('timeline/<username>', views.timeline, name='timeline'),
+    path('search', views.search, name='search'),
+    path('notification', views.notification, name='notification'),
     path('retweet', views.retweet, name='retweet'),  # make post request
     path('like', views.like, name='like'),  # make post request
     path('impression', views.impression, name='impression'),

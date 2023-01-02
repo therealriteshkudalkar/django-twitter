@@ -7,7 +7,7 @@ from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect
 from django.utils import timezone
 
-from .models import User, Follow
+from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, TweetImage, Message, Like, Impression
 
 # uploader.upload(request.FILES['file'])
 
@@ -101,6 +101,9 @@ def register(request):
 def login(request):
     if request.method == 'GET':
         # if user is already logged in then redirect to timeline
+        session_username = request.session.get('username')
+        if session_username:
+            return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': session_username}))
 
         error_message = request.session.get('error_message')
 
@@ -148,20 +151,46 @@ def logout(request):
 
 
 def profile(request, username):
-    # if profile of user is private check is session user is a follower
-    #       if session user is a follower then show profile
-    #       else show the incomplete profile and say it's private
-    # if not private then show the profile
-    # if both user profile and session user match then also show edit profile button
     if request.method == 'GET':
-        print(username)
         session_username = request.session.get('username')
+        print('username', username)
+        print('session_username', session_username)
         if session_username:
             # user is authenticated
             # check if the username is same as session_username
             if session_username.lower() == username.lower():
                 # show user profile with edit profile button
-                template_context = {}
+                try:
+                    session_user = User.objects.get(username=username.lower())
+                except User.DoesNotExist:
+                    request.session["error_message"] = 'Could not find user'
+                    return HttpResponseRedirect(reverse('search'))
+
+                tweets = Tweet.objects.filter(user_id=session_user.id)
+                retweets = Retweet.objects.filter(user_id=session_user.id)
+                followers = Follow.objects.filter(followee_id=session_user.id)
+                followings = Follow.objects.filter(follower_id=session_user.id)
+
+                print(tweets, retweets, followers, followings)
+
+                template_context = {
+                    'user': {
+                        'is_logged_in': True,
+                        'fname': session_user.fname,
+                        'lname': session_user.lname,
+                        'username': session_user.username,
+                        'tweet_count': tweets.count(),
+                        'visitor': session_user.username,
+                        'country': session_user.country,
+                        'joined_month': session_user.created_at.strftime("%B"),
+                        'joined_year': session_user.created_at.strftime("%Y"),
+                        'following_count': followings.count(),
+                        'follower_count': followers.count(),
+                        'is_same_user': True,
+                        'is_follower': False,
+                        'is_verified': session_user.is_verified,
+                    }
+                }
                 return render(request, 'twitter_web/profile.html', context=template_context)
             else:
                 # check if username has a private profile
@@ -169,6 +198,7 @@ def profile(request, username):
                     profile_user = User.objects.get(username=username.lower())
                 except User.DoesNotExist:
                     # show error on search page
+                    request.session["error_message"] = 'No such user found!'
                     return HttpResponseRedirect(reverse('search_page'))
 
                 if profile_user.is_account_private:
@@ -177,21 +207,79 @@ def profile(request, username):
                         follow = Follow.objects.get(follower_id=session_username.lower(),
                                                     followee_id=username.lower())
                     except Follow.DoesNotExist:
-                        template_context = {}
+                        template_context = {
+                            'user': {
+                                'is_logged_in': True,
+                            }
+                        }
                         return render(request, 'twitter_web/profile', context=template_context)
 
-                template_context = {}
+                template_context = {
+                    'user': {
+                        'is_logged_in': True,
+                    }
+                }
+                print("hello")
                 return render(request, 'twitter_web/profile.html', context=template_context)
         else:
             # user is not authenticated
             # check if user of username is private
-            pass
+            try:
+                profile_user = User.objects.get(username=username.lower())
+            except User.DoesNotExist:
+                # show error on search page
+                return HttpResponseRedirect(reverse('search_page'))
 
-        return render(request, 'twitter_web/profile.html')
+            if profile_user.is_account_private:
+                # check if session user is one of the followers
+                template_context = {
+                    'user': {
+                        'is_logged_in': False,
+                    }
+                }
+
+                return render(request, 'twitter_web/profile', context=template_context)
+
+            template_context = {
+                'user': {
+                    'is_logged_in': False,
+                }
+            }
+            return render(request, 'twitter_web/profile.html', context=template_context)
 
 
 def edit_profile(request):
     # if user is logged in then show to profile else redirect to search page
+    if request.method == "GET":
+        session_username = request.session.get("username")
+        if session_username:
+            # show the edit page with values filled already
+            pass
+        else:
+            # redirect to search page
+            return HttpResponseRedirect(reverse('search_page'))
+    else:
+        session_username = request.session.get("username")
+        if session_username:
+            # update information of the user
+            pass
+        else:
+            # redirect to search page
+            return HttpResponseRedirect(reverse('search_page'))
+
+
+def search(request):
+    if request.method == "GET":
+        # check if there is any user error
+        # if yes, then show that error on search page
+        # else show the trending page
+        pass
+    else:
+        # check if there
+        pass
+
+
+def notification(request):
     pass
 
 
