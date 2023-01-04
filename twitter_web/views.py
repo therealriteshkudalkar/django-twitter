@@ -2,14 +2,19 @@ import datetime as dt
 
 from cloudinary import uploader
 from datetime import datetime
+
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, reverse
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.utils import timezone
+from django.db import transaction
 
-from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, TweetImage, Message, Like, Impression
+from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, HeaderImage, TweetImage, Message, Like, Impression
+from .helper import int_to_string
+
 
 # uploader.upload(request.FILES['file'])
+# uploader.upload_resource(request.FILES['image'])
 
 
 def get_200(request):
@@ -25,6 +30,7 @@ def error_404(request, exception, template_name='twitter_web/404.html'):
 def home(request):
     # if user is present in session then take them to timeline
     # else redirect to search page
+    # show a design page
     return HttpResponseRedirect(reverse('twitter_web:login'))
 
 
@@ -156,121 +162,175 @@ def logout(request):
 
 def profile(request, username):
     if request.method == 'GET':
-        session_username = request.session.get('username')
-        print('username', username)
-        print('session_username', session_username)
-        if session_username:
+
+        session_username = request.session.get('username', ' ')
+        session_user_query = User.objects.filter(username=session_username.lower())
+        user_query = User.objects.filter(username=username.lower())
+
+        if not user_query.exists():
+            print("hello", username, 'haghi')
+            request.session["error_message"] = "User does not exist"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+
+        user = user_query.first()
+
+        tweets = Tweet.objects.filter(user_id=user.id)
+        retweets = Retweet.objects.filter(user_id=user.id)
+        followers = Follow.objects.filter(followee_id=user.id)
+        followings = Follow.objects.filter(follower_id=user.id)
+        bio = Bio.objects.filter(user_id=user.id).order_by('-created_at')
+        profile_image = ProfileImage.objects.filter(user_id=user.id).order_by('-created_at')
+        header_image = HeaderImage.objects.filter(user_id=user.id).order_by('-created_at')
+
+        if profile_image.exists():
+            profile_image_url = profile_image.first().image.url
+        else:
+            profile_image_url = 'default'
+
+        if header_image.exists():
+            header_image_url = header_image.first().image.url
+        else:
+            header_image_url = 'default'
+
+        if bio.exists():
+            bio_text = bio.first().text
+        else:
+            bio_text = ''
+
+        template_context = {
+            'user': {
+                'name': user.fname + ' ' + user.lname,
+                'fname': user.fname,
+                'lname': user.lname,
+                'username': user.username,
+                'tweet_count': tweets.count() + retweets.count(),
+                'visitor': user.username,
+                'country': user.country,
+                'joined_month': user.created_at.strftime("%B"),
+                'joined_year': user.created_at.strftime("%Y"),
+                'following_count': int_to_string(followings.count()),
+                'follower_count': int_to_string(followers.count()),
+                'is_verified': user.is_verified,
+                'bio': bio_text,
+                'profile_image_url': profile_image_url,
+                'header_image_url': header_image_url,
+            }
+        }
+
+        if session_user_query.exists():
+            session_user = session_user_query.first()
             # user is authenticated
-            # check if the username is same as session_username
-            if session_username.lower() == username.lower():
-                # show user profile with edit profile button
-                try:
-                    session_user = User.objects.get(username=username.lower())
-                except User.DoesNotExist:
-                    request.session["error_message"] = 'Could not find user'
-                    return HttpResponseRedirect(reverse('search'))
+            is_same_user = session_username.lower() == username.lower()
+            template_context["user"]["is_logged_in"] = True
+            template_context["user"]["is_same_user"] = is_same_user
 
-                tweets = Tweet.objects.filter(user_id=session_user.id)
-                retweets = Retweet.objects.filter(user_id=session_user.id)
-                followers = Follow.objects.filter(followee_id=session_user.id)
-                followings = Follow.objects.filter(follower_id=session_user.id)
-
-                print(tweets, retweets, followers, followings)
-
-                template_context = {
-                    'user': {
-                        'is_logged_in': True,
-                        'fname': session_user.fname,
-                        'lname': session_user.lname,
-                        'username': session_user.username,
-                        'tweet_count': tweets.count(),
-                        'visitor': session_user.username,
-                        'country': session_user.country,
-                        'joined_month': session_user.created_at.strftime("%B"),
-                        'joined_year': session_user.created_at.strftime("%Y"),
-                        'following_count': followings.count(),
-                        'follower_count': followers.count(),
-                        'is_same_user': True,
-                        'is_follower': False,
-                        'is_verified': session_user.is_verified,
-                    }
-                }
-                return render(request, 'twitter_web/profile.html', context=template_context)
+            if is_same_user:
+                template_context["user"]["show_profile"] = True
             else:
-                # check if username has a private profile
-                try:
-                    profile_user = User.objects.get(username=username.lower())
-                except User.DoesNotExist:
-                    # show error on search page
-                    request.session["error_message"] = 'No such user found!'
-                    return HttpResponseRedirect(reverse('twitter_web:search'))
 
-                if profile_user.is_account_private:
-                    # check if session user is one of the followers
-                    try:
-                        follow = Follow.objects.get(follower_id=session_username.lower(),
-                                                    followee_id=username.lower())
-                    except Follow.DoesNotExist:
-                        template_context = {
-                            'user': {
-                                'is_logged_in': True,
-                            }
-                        }
-                        return render(request, 'twitter_web/profile', context=template_context)
+                follow_rel = Follow.objects.filter(follower_id=session_user.id,
+                                                   followee_id=user.id)
 
-                template_context = {
-                    'user': {
-                        'is_logged_in': True,
-                    }
-                }
-                print("hello")
-                return render(request, 'twitter_web/profile.html', context=template_context)
+                template_context["user"]["is_follower"] = follow_rel.exists()
+
+                if user.is_account_private:
+                    template_context["user"]["show_profile"] = follow_rel.exists()
+                else:
+                    template_context["user"]["show_profile"] = True
         else:
             # user is not authenticated
-            # check if user of username is private
-            try:
-                profile_user = User.objects.get(username=username.lower())
-            except User.DoesNotExist:
-                # show error on search page
-                return HttpResponseRedirect(reverse('search_page'))
+            template_context["user"]["is_same_user"] = False
+            template_context["user"]["is_follower"] = False
+            template_context["user"]["show_profile"] = user.is_account_private
 
-            if profile_user.is_account_private:
-                # check if session user is one of the followers
-                template_context = {
-                    'user': {
-                        'is_logged_in': False,
-                    }
-                }
-
-                return render(request, 'twitter_web/profile', context=template_context)
-
-            template_context = {
-                'user': {
-                    'is_logged_in': False,
-                }
-            }
-            return render(request, 'twitter_web/profile.html', context=template_context)
+        return render(request, 'twitter_web/profile.html', context=template_context)
 
 
 def edit_profile(request):
     # if user is logged in then show to profile else redirect to search page
-    if request.method == "GET":
-        session_username = request.session.get("username")
-        if session_username:
-            # show the edit page with values filled already
-            template_context = {}
-            return render(request, 'twitter_web/edit_profile.html', context=template_context)
-        else:
-            # redirect to search page
-            return HttpResponseRedirect(reverse('search_page'))
+    session_username = request.session.get("username")
+
+    session_user_filtered = User.objects.filter(username=session_username)
+
+    if session_user_filtered:
+        session_user = session_user_filtered.first()
     else:
-        session_username = request.session.get("username")
-        if session_username:
-            # update information of the user
-            pass
+        return HttpResponseRedirect(reverse('twitter_web:search'))
+
+    if request.method == "GET":
+        # show the edit page with values filled already
+
+        bio = Bio.objects.filter(user_id=session_user.id).order_by('-created_at')
+        if bio.exists():
+            bio_text = bio.first().text
         else:
-            # redirect to search page
-            return HttpResponseRedirect(reverse('search_page'))
+            bio_text = 'default'
+
+        profile_image = ProfileImage.objects.filter(user_id=session_user.id).order_by('-created_at')
+        if profile_image.exists():
+            profile_image_url = profile_image.first().image.url
+        else:
+            profile_image_url = 'default'
+
+        header_image = HeaderImage.objects.filter(user_id=session_user.id).order_by('-created_at')
+        if header_image.exists():
+            header_image_url = header_image.first().image.url
+        else:
+            header_image_url = 'default'
+
+        template_context = {
+            'user': {
+                'fname': session_user.fname,
+                'lname': session_user.lname,
+                'username': session_user.username,
+                'email': session_user.email,
+                'country': session_user.country,
+                'bio': bio_text,
+                'profile_image_url': profile_image_url,
+                'header_image_url': header_image_url,
+                'is_account_private': session_user.is_account_private,
+                'dob': session_user.dob.strftime("%Y-%m-%d"),
+            }
+        }
+        return render(request, 'twitter_web/edit_profile.html', context=template_context)
+    else:
+        # update information of the user
+
+        is_private = len(request.POST.getlist("is_account_private")) != 0
+
+        with transaction.atomic():
+            session_user_filtered.update(
+                fname=request.POST.get("fname"),
+                lname=request.POST.get("lname"),
+                username=request.POST.get("username"),
+                email=request.POST.get("email"),
+                country=request.POST.get("country"),
+                is_account_private=is_private,
+                dob=request.POST.get("dob")
+            )
+
+            updated_bio = request.POST.get("bio")
+            Bio.objects.create(
+                user_id=session_user,
+                text=updated_bio,
+            )
+
+            updated_profile_image = request.FILES.get("profile_image", False)
+            if updated_profile_image:
+                ProfileImage.objects.create(
+                    user_id=session_user,
+                    image=uploader.upload_resource(updated_profile_image),
+                )
+
+            updated_header_image = request.FILES.get("header_image", False)
+            if updated_header_image:
+                HeaderImage.objects.create(
+                    user_id=session_user,
+                    image=uploader.upload_resource(updated_header_image),
+                )
+
+            print(session_user.username)
+            return HttpResponseRedirect(reverse('twitter_web:profile', kwargs={'username': session_user.username}))
 
 
 def search(request):
@@ -296,77 +356,50 @@ def search(request):
 
 def follow(request):
     if request.method == "POST":
-        session_username = request.session.get("username")
-        try:
-            session_user = User.objects.get(username=session_username)
-        except User.DoesNotExist:
-            return JsonResponse(data={
-                'response': 'error'
-            }, safe=False)
+        session_username = request.session.get("username", " ")
+        username_being_followed = request.POST.get("followee", " ")
+        session_user = User.objects.filter(username=session_username)
+        user_being_followed = User.objects.filter(username=username_being_followed)
 
-        username_being_followed = request.POST.get("followee_id")
-        try:
-            user_being_followed = User.objects.get(username=username_being_followed)
-        except User.DoesNotExist:
-            return JsonResponse(data={
-                'response': 'error'
-            }, safe=False)
+        response = {}
 
-        if session_username:
-            # create new follow
-            new_follow = Follow.objects.create(
-                follower_id=session_user,
-                followee_id=user_being_followed
-            )
-            response = {
-                'response': 'successful'
-            }
+        if session_user.exists():
+            if user_being_followed.exists():
+
+                has_a_follow = Follow.objects.filter(
+                    follower_id=session_user.first().id,
+                    followee_id=user_being_followed.first().id,
+                )
+
+                if has_a_follow.exists():
+                    has_a_follow.delete()
+                    response["response"] = "successful"
+                    response["message"] = "Unfollowed successfully"
+                else:
+                    Follow.objects.create(
+                        follower_id=session_user.first(),
+                        followee_id=user_being_followed.first()
+                    )
+                    response["response"] = "successful"
+                    response["message"] = "Followed successfully"
+            else:
+                response["response"] = "error"
+                response["message"] = "User not found"
         else:
             # user has to login first
-            response = {
-                'response': 'login'
-            }
+            response["response"] = "login"
+            response["message"] = 'Please login first'
         return JsonResponse(data=response, safe=False)
 
 
-def unfollow(request):
-    if request.method == "POST":
-        session_username = request.session.get("username")
-        if session_username:
-            try:
-                session_user = User.objects.get(username=session_username)
-            except User.DoesNotExist:
-                return JsonResponse(data={
-                    'response': 'error'
-                }, safe=False)
+def following_list(request, username):
+    if request.method == "GET":
+        pass
 
-            username_being_followed = request.POST.get("followee_id")
-            try:
-                user_being_followed = User.objects.get(username=username_being_followed)
-            except User.DoesNotExist:
-                return JsonResponse(data={
-                    'response': 'error'
-                }, safe=False)
 
-            # if follow exist delete it
-            try:
-                follow_to_remove = Follow.objects.get(
-                    follower_id=session_username,
-                    followee_id=username_being_followed,
-                )
-                follow_to_remove.delete()
-                response = {
-                    'response': 'successful'
-                }
-            except Follow.DoesNotExist:
-                response = {
-                    'response': 'error'
-                }
-            return JsonResponse(data=response, safe=False)
-        else:
-            return JsonResponse(data={
-                'response': 'login'
-            }, safe=False)
+def follower_list(request, username):
+    if request.method == "GET":
+        pass
 
 
 def tweet(request, tweet_id):
@@ -374,12 +407,17 @@ def tweet(request, tweet_id):
         pass
 
 
+def post_tweet(request):
+    if request.method == "POST":
+        return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': ''}))
+
+
 def notification(request):
     if request.method == "GET":
         pass
 
 
-def timeline(request, profile_id):
+def timeline(request, username):
     if request.method == "GET":
         # if user is logged in then show timeline else redirect to search page
         pass
@@ -415,6 +453,13 @@ def bookmark(request):
 
 def message(request):
     # if user is logged in then show messages page else redirect them to login page
+    if request.method == "GET":
+        pass
+    else:
+        pass
+
+
+def conversation(request, username):
     if request.method == "GET":
         pass
     else:

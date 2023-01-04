@@ -1,0 +1,50 @@
+{% load static %}
+<aside class="navigation-section">
+  <header class="navigation-section__header">
+    <img class="navigation-section__header-image" src="{% static 'twitter_web/assets/twitter.png' %}">
+  </header>
+  <nav class="navigation-section__nav">
+    <ul class="navigation-section__nav-list">
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:search' %}">
+          <img src="{% static 'twitter_web/assets/icons/icons8-search-96.png' %}">
+        </a>
+      </li>
+      {% if user.is_logged_in %}
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:timeline' username=user.username %}"><img
+            src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}"></a>
+      </li>
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:notification'%}"><img
+            src="{% static 'twitter_web/assets/icons/icons8-notification-96.png' %}"></a>
+      </li>
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:bookmark' %}"><img
+            src="{% static 'twitter_web/assets/icons/icons8-bookmark-96.png' %}"></a>
+      </li>
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:message' %}"><img
+            src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}"></a>
+      </li>
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link" href="/profile/{{ user.username }}"><img
+            src="{% static 'twitter_web/assets/icons/icons8-administrator-male-96.png' %}"></a>
+      </li>
+      {% endif %}
+      <li class="navigation-section__nav-item">
+        <a class="navigation-section__nav-item-link"><img
+            src="{% static 'twitter_web/assets/icons/icons8-settings-96.png' %}"></a>
+      </li>
+      {% if user.is_logged_in %}
+      <li class="navigation-section__nav-item">
+        <div>
+          <a class="navigation-section__nav-item-link navigation-section__nav-item-link--blue"
+            href="{% url 'twitter_web:search' %}"><img
+              src="{% static 'twitter_web/assets/icons/icons8-quill-with-ink-96.png' %}"></a>
+        </div>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+</aside>

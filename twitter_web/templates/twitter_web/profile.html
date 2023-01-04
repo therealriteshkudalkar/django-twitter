@@ -1,132 +1,163 @@
-{% include 'twitter_web/include/head.html' with title='Login' %}
+{% include 'twitter_web/include/head.html' with title=user.name %}
 {% load static %}
 <link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
 </head>
+
 <body>
-  <aside>
-    <header>
-      <img src="{% static 'twitter_web/assets/twitter.png' %}">
-    </header>
-    <ul>
-      <div>
-        <a href="/search"><img src="{% static 'twitter_web/assets/icons/icons8-search-96.png' %}"></a>
-      </div>
-      {% if user.is_logged_in %}
-        <div>
-          <a href="/timeline/{{ user.username }}"><img src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}"></a>
-        </div>
-        <div>
-          <a href="/notification/{{ user.username }}"><img src="{% static 'twitter_web/assets/icons/icons8-notification-96.png' %}"></a>
-        </div>
-        <div>
-          <a href="/bookmark"><img src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}"></a>
-        </div>
-        <div>
-          <a href="/messages"><img src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}"></a>
-        </div>
-        <div>
-          <a href="/profile/{{ user.username }}"><img src="{% static 'twitter_web/assets/icons/icons8-administrator-male-96.png' %}"></a>
-        </div>
-      {% endif %}
-      <div>
-        <a><img src="{% static 'twitter_web/assets/icons/icons8-settings-96.png' %}"></a>
-      </div>
-      {% if user.is_logged_in %}
-        <div>
-          <div>
-            <a href="{% url 'twitter_web:search' %}"><img src="{% static 'twitter_web/assets/icons/icons8-leaf-96.png' %}"></a>
-          </div>
-        </div>
-      {% endif %}
-    </ul>
-  </aside>
+  <div class="container">
 
-  <main>
-    <header>
-      <div>
-        <a href="{% url 'twitter_web:search' %}"><img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}"></a>
-      </div>
-      <div>
-        <h2>
-          {{ user.fname }} {{user.lname }}
-          {% if user.is_verified %}
-            <span><img src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
-          {% endif %}
-        </h2>
-        <p>{{ user.tweet_count }}</p>
-      </div>
-    </header>
-    <section>
-      <div>
-        <img>
-      </div>
-      <div>
-        <div>
-          <img>
+    {% include 'twitter_web/include/nav-bar.html' %}
+
+    <main class="main-section">
+      <header class="main-section__header">
+        <div class="main-section__go-back">
+          <a class="main-section__go-back-link" href="{% url 'twitter_web:search' %}">
+            <div>
+              <img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}">
+            </div>
+          </a>
         </div>
-        <div>
-          <button><img src="{% static 'twitter_web/assets/icons/icons8-menu-vertical-100.png' %}"></button>
-          <form>
-            {% csrf_token %}
-            {% if user.is_same_user %}
-              <a href="/edit_profile">Edit Profile</a>
-            {% else %}
-              {% if user.is_follower %}
-                <input type="submit" name="follow_value" value="Unfollow">
-              {% else %}
-                <input type="hidden" name="follow_value" value="Follow">
-              {% endif %}
+        <div class="main-section__user-head">
+          <h2 class="main-section__user-heading">
+            <span>{{ user.fname }}</span>
+            <span>{{ user.lname }}</span>
+            {% if user.is_verified %}
+            <span><img class="main-section__user-verified-tag"
+                src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
             {% endif %}
-            <input type="hidden" name="follower" value="{{ user.visitor }}">
-            <input type="hidden" name="profile" value="{{ user.username }}">
-          </form>
+          </h2>
+          <p class="main-section__user-tweet-count">
+            {{ user.tweet_count }} Tweet{{ user.tweet_count|pluralize:" ,s"}}
+          </p>
         </div>
-      </div>
-    </section>
-    <section>
-      <div>
-        <h2>
-          {{ user.fname }} {{ user.lname }}
+      </header>
 
-        </h2>
-        {% if user.is_verified %}
-            <span><img src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
+      <article class="main-section__includer">
+        <section class="main-section__profile">
+          <div class="main-section__header-image">
+            {% if user.header_image_url == "default" %}
+            <img class="main-section__header-img"
+              src="{% static 'twitter_web/assets/icons/default_profile_header.jpg' %}">
+            {% else %}
+            <img class="main-section__header-img" src="{{ user.header_image_url }}">
+            {% endif %}
+          </div>
+
+          <div class="main-section__profile-image">
+            <div class="main-section__profile-image-circle">
+              {% if user.profile_image_url == "default" %}
+              <img class="main-section__profile-img"
+                src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+              {% else %}
+              <img class="main-section__profile-img" src="{{ user.profile_image_url }}">
+              {% endif %}
+            </div>
+
+            <div class="main-section__buttons">
+              {% if user.is_same_user %}
+              <a class="main-section__edit-profile" href="{% url 'twitter_web:edit_profile' %}">Edit Profile</a>
+              {% else %}
+              <form onsubmit="return false" class="main-section__follow-form" action="{% url 'twitter_web:follow' %}"
+                method="POST">
+                {% csrf_token %}
+                {% if user.is_follower %}
+                <input class="main-section__follow  main-section__unfollow" type="submit" name="follow_value"
+                  value="Unfollow" onclick="onFollowButtonClick()">
+                {% else %}
+                <input class="main-section__follow" type="submit" name="follow_value" value="Follow"
+                  onclick="onFollowButtonClick()">
+                {% endif %}
+                <input type="hidden" name="follower" value="{{ user.visitor }}">
+                <input type="hidden" name="profile" value="{{ user.username }}">
+              </form>
+              {% endif %}
+
+              <button class="main-section__more-option">
+                <img src="{% static 'twitter_web/assets/icons/icons8-menu-vertical-96.png' %}">
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="main-section__bio">
+          <div class="info">
+            <h2 class="info__name">
+              <span>{{ user.fname }}</span>
+              <span>{{ user.lname }}</span>
+              {% if user.is_verified %}
+              <span class="info__verified">
+                <img src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}">
+              </span>
+              {% endif %}
+            </h2>
+            <p class="info__username">
+              <span>@{{ user.username }}</span>
+            </p>
+          </div>
+          {% if user.show_profile %}
+          <div class="bio">
+            <p class="bio__text">{{ user.bio }}</p>
+          </div>
+          {% endif %}
+          <div class="details">
+            <div class="details__country">
+              <span class="details__country-image"><img
+                  src="{% static 'twitter_web/assets/icons/icons8-visit-96.png' %}"></span>
+              <span>{{ user.country }}</span>
+            </div>
+            <div class="details__date-joined">
+              <span class="details__date-joined-image"><img
+                  src="{% static 'twitter_web/assets/icons/icons8-tear-off-calendar-96.png' %}" </span>
+                <span>{{ user.joined_month }}</span>
+                <span>{{ user.joined_year }}</span>
+            </div>
+          </div>
+          <div class="follow">
+            <div class="follow__following">
+              <span class="follow__following-number">{{ user.following_count }}</span>
+              <span class="follow__following-text">Following</span>
+            </div>
+            <div class="follow__followers">
+              <span class="follow__followers-number">{{ user.follower_count }}</span>
+              <span class="follow__followers-text">Followers</span>
+            </div>
+          </div>
+        </section>
+
+        {% verbatim %}
+        {% if user.show_profile %}
+        <section class="main-section__tweets">
+          {% for tweet in tweets: %}
+          {% include 'twitter_web/include/tweet.html' with tweet_t=tweet %}
+          {% endfor %}
+        </section>
+        {% else %}
+        <section class="main-section__no-tweets">
+          <h3>These tweets are protected.</h3>
+          <p>
+            Only confirmed followers have access to @{{ user.username }}'s Tweets
+            and complete profile. Tap the 'follow' button to send a follow request.
+          </p>
+        </section>
         {% endif %}
-      </div>
-      <div>
-        <p>Bio</p>
-      </div>
-      <div>
-        <span><img src="{% static 'twitter_web/assets/icons/icons8-visit-96.png' %}"></span>
-        <p>{{ user.country }}</p>
-      </div>
-      <div>
-        <span>{{ user.joined_month }} {{ user.joined_year }}</span>
-      </div>
-      <div>
-        <div>
-          <p>{{ user.following_count }}</p>
-          <p>Following</p>
-        </div>
-        <div>
-          <p>{{ user.follower_count }}</p>
-          <p>Followers</p>
-        </div>
-      </div>
-    </section>
-  </main>
-  {% verbatim %}
-  <aside>
-    <div>
-      <input type="text">
-    </div>
-  </aside>
-  <section>
-    {% for tweet in tweets: %}
-      {% include 'twitter_web/include/tweet.html' with tweet_t=tweet %}
-    {% endfor %}
-  </section> -->
+        {% endverbatim %}
+      </article>
+    </main>
 
-  {% endverbatim %}
+    {% include 'twitter_web/include/search-bar.html' %}
+
+    <div class="modal-login">
+      <a href="{% url 'twitter_web:login' %}">Login</a>
+      <a href="{% url 'twitter_web:register' %}">Register</a>
+    </div>
+
+    <div class="modal-error">
+      <p></p>
+    </div>
+
+    <div class="modal-backdrop"></div>
+  <div>
+
+  <script src="{% static 'twitter_web/js/profile.js' %}"></script>
 
 {% include 'twitter_web/include/footer.html' %}

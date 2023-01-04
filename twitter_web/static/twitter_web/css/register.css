@@ -53,6 +53,7 @@ body {
     appearance: none;
     -webkit-appearance: none;
     border: none;
+    border-color: none;
     -webkit-border-color: none;
     border: 2px solid #00acee;
     border-radius: 0.5rem;
@@ -67,6 +68,7 @@ body {
 
 .main-content__form-button {
     appearance: none;
+    text-decoration: none;
     color: #fff;
     background-color: #00acee;
     padding: 1rem;
@@ -76,6 +78,7 @@ body {
 }
 
 .main-content__form-button--light {
+    text-decoration: none;
     color: #00acee;
     background-color: #fff;
     border: 2px solid #00acee;

@@ -7,24 +7,28 @@ app_name = 'twitter_web'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('200', views.get_200, name='200'),
+
     path('register', views.register, name='register'),
     path('login', views.login, name='login'),
     path('logout', views.logout, name='logout'),
-    path('follow', views.follow, name='follow'),
-    path('unfollow', views.unfollow, name='unfollow'),
-    # The only user who should be able to access private profile are the ones that
-    # follow the user whose account is being viewed
+
     path('profile/<username>', views.profile, name='profile'),
     path('edit-profile', views.edit_profile, name='edit_profile'),
-    # Approved only if the respective user is authorized in otherwise redirect to 404
     path('timeline/<username>', views.timeline, name='timeline'),
     path('tweet/<tweet_id>', views.tweet, name='tweet'),
+    path('post_tweet', views.post_tweet, name='post_tweet'),
+
+    path('follow', views.follow, name='follow'),
+    path('follower/<username>', views.follower_list, name='follower_list'),
+    path('following/<username>', views.following_list, name='following_list'),
+
+    path('retweet', views.retweet, name='retweet'),
+    path('like', views.like, name='like'),
+
     path('search', views.search, name='search'),
     path('notification', views.notification, name='notification'),
-    path('retweet', views.retweet, name='retweet'),  # make post request
-    path('like', views.like, name='like'),  # make post request
-    path('impression', views.impression, name='impression'),
-    path('bookmark', views.bookmark, name='bookmark'),  # use it for both fetching and saving bookmarks
+    path('bookmark', views.bookmark, name='bookmark'),
     path('messages', views.message, name='message'),
-    path('200', views.get_200, name='200'),
+    path('impression', views.impression, name='impression'),
 ]

@@ -1,0 +1,11 @@
+<aside class="search-section">
+    <div>
+      <form action="{% url 'twitter_web:search' %}" method="POST">
+        {% csrf_token %}
+        <div>
+          <input type="text" name="search">
+        </div>
+      </form>
+    </div>
+  </aside>
+</div>

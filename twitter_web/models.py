@@ -34,6 +34,13 @@ class ProfileImage(models.Model):
     created_at = models.DateTimeField(default=now, editable=False)
 
 
+class HeaderImage(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = CloudinaryField('header_image')
+    created_at = models.DateTimeField(default=now, editable=False)
+
+
 class Follow(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     follower_id = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False, related_name='follower_id')
