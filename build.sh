@@ -2,7 +2,7 @@
 # exit on error
 set -o errexit
 
-poetry cache clear . --all
+poetry cache clear . --all -n
 rm poetry.lock
 poetry install
 
