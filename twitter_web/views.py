@@ -5,20 +5,12 @@ from datetime import datetime
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, reverse
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from django.db import transaction
 
 from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, HeaderImage, TweetImage, Message, Like, Impression
 from .helper import int_to_string
-
-
-# uploader.upload(request.FILES['file'])
-# uploader.upload_resource(request.FILES['image'])
-
-
-def get_200(request):
-    return HttpResponse(status=200)
 
 
 def error_404(request, exception, template_name='twitter_web/404.html'):
@@ -37,14 +29,16 @@ def home(request):
 def register(request):
     if request.method == 'GET':
         error_message = request.session.get('error_message')
+        error_message_color = request.session.get('error_message_color')
 
         if error_message:
             request.session.pop('error_message')
-
-        print('error_message: ', error_message)
+        if error_message_color:
+            request.session.pop('error_message_color')
 
         template_context = {
-            'error_message': error_message
+            'error_message': error_message,
+            'error_message_color': error_message_color,
         }
         return render(request, 'twitter_web/register.html', context=template_context)
     else:
@@ -116,20 +110,22 @@ def login(request):
             return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': session_username}))
 
         error_message = request.session.get('error_message')
+        error_message_color = request.session.get('error_message_color')
 
         if error_message:
             request.session.pop('error_message')
-
-        print('error_message: ', error_message)
+        if error_message_color:
+            request.session.pop('error_message_color')
 
         template_context = {
-            'error_message': error_message
+            'error_message': error_message,
+            'error_message_color': error_message_color,
         }
 
         return render(request, 'twitter_web/login.html', context=template_context)
     else:
-        username_or_email = request.POST["email_or_username"]
-        password = request.POST["password"]
+        username_or_email = request.POST.get("email_or_username")
+        password = request.POST.get("password")
 
         try:
             user = User.objects.get(username=username_or_email)
@@ -338,7 +334,7 @@ def search(request):
         # check if there is any user error
         # if yes, then show that error on search page
         # else show the trending page
-        error_message = request.session.get("error_message")
+        error_message = request.session.get("search_error_message")
         if error_message:
             template_context = {
                 'error_message': error_message,

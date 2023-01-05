@@ -31,10 +31,11 @@
                 <div class="main-content__form-block">
                     <input type="submit" class="main-content__form-button" value="Login">
                 </div>
-                <div class="main-content__form-block">
-                    <a class="main-content__form-button main-content__form-button--light" href="{% url 'twitter_web:register' %}">Register</a>
-                </div>
+
             </form>
+            <div class="main-content__form-block">
+                <a class="main-content__form-button main-content__form-button--light" href="{% url 'twitter_web:register' %}">Register</a>
+            </div>
         </article>
     </section>
 {% include 'twitter_web/include/footer.html' %}

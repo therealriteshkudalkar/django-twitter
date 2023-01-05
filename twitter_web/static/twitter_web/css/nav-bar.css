@@ -1,0 +1,40 @@
+.navigation-section {
+    text-align: center;
+}
+
+.navigation-section__header {
+    height: 5rem;
+    margin-bottom: 2rem;
+}
+
+.navigation-section__header-image {
+    width: 3rem;
+    margin-top: 2rem;
+}
+
+.navigation-section__nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.navigation-section__nav-item > div {
+    background-color: #00acee;
+    border-radius: 50%;
+    width: 4rem;
+    height: 4rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.navigation-section__nav-item-link > img {
+    display: block;
+    width: 3rem;
+    margin: 0.5rem;
+}
+
+.navigation-section__nav-item-link--blue {
+    margin: 3rem 0.5rem;
+}

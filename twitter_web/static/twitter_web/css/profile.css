@@ -1,4 +1,6 @@
-/* 7f7f7f color of location pin */
+* {
+    box-sizing: border-box;
+}
 
 body {
     overflow: hidden;
@@ -28,51 +30,8 @@ body {
     width: 100vw;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 7rem 3fr;
+    grid-template-columns: 1fr 5fr;
     grid-template-areas: "nav main";
-}
-
-/****************************** Navigation Section ***********************/
-
-.navigation-section {
-    text-align: center;
-}
-
-.navigation-section__header {
-    height: 5rem;
-    margin-bottom: 2rem;
-}
-
-.navigation-section__header-image {
-    width: 3rem;
-    margin-top: 2rem;
-}
-
-.navigation-section__nav-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.navigation-section__nav-item > div {
-    background-color: #00acee;
-    border-radius: 50%;
-    width: 4rem;
-    height: 4rem;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.navigation-section__nav-item-link > img {
-    display: block;
-    width: 3rem;
-    margin: 0.5rem;
-}
-
-.navigation-section__nav-item-link--blue {
-    margin: 3rem 0.5rem;
 }
 
 /*************************** Main Section ***************************/
@@ -141,8 +100,9 @@ body {
 .main-section__header-img {
     height: 10rem;
     width: 100%;
+    object-fit: cover;
+    object-position: center;
 }
-
 
 .main-section__profile-image {
     position: relative;
@@ -151,11 +111,10 @@ body {
     margin-top: 1rem;
 }
 
-
 .main-section__profile-image-circle {
     position: absolute;
     top: -4.5rem;
-    left: 2.5rem;
+    left: 5%;
 }
 
 .main-section__profile-img {
@@ -163,6 +122,8 @@ body {
     width: 7rem;
     border-radius: 7rem;
     border: 3px solid #fff;
+    object-fit: cover;
+    object-position: center;
 }
 
 
@@ -268,12 +229,6 @@ body {
 .follow__following-text,
 .follow__followers-text {
     color: #7f7f7f;
-}
-
-/**************************** Search Section **************************/
-
-.search-section {
-    display: none;
 }
 
 

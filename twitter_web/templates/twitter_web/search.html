@@ -1,10 +1,81 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+{% include 'twitter_web/include/head.html' with title='Explore/Twitter' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/search.css' %}">
 </head>
-<body>
 
-</body>
-</html>
+<body>
+	<header>
+		<nav>
+			<a>
+				<div>
+					<!-- This image changes to back button when clicked on search field-->
+					<img>
+				</div>
+			</a>
+			<div>
+				<img>
+				<form>
+					<input type="text">
+				</form>
+			</div>
+			<button>
+				<img>
+			</button>
+		</nav>
+	</header>
+
+	<!-- Show back button when visible -->
+	<!-- Appears when clicked on search field otherwise hidden -->
+	<section class="searching">
+		<p>Try searching for people, topics or keywords</p>
+	</section>
+
+	{% if error_message %}
+	<!-- Show back button when visible -->
+	<section class="error">
+		<p>{{% error_message.message %}</p>
+	</section>
+	{% endif %}
+
+	<main class="main-content">
+
+		<section class="tab-link">
+			{% if logged_in %}
+			<button class="tab-link__item">For you</button>
+			{% endif %}
+			<button class="tab-link__item">Trending</button>
+			<button class="tab-link__item">News</button>
+		</section>
+		
+		<section class="tabs">
+			{% if logged_in %}
+			<article class="for-you">
+				{% for trend_ in for_you_trends %}
+					{% include 'twitter_web/include/trend.html' with trend=trend_ %}
+				{% endfor %}
+				<mark>Who to follow</mark>
+				{% for person_ in persons %}
+					{% include 'twitter_web/include/profile-list-item.html' with person=person_ %}
+				{% endfor %}
+				<mark>Tweets</mark>
+				{% for tweet_ in tweets %}
+					{% include 'twitter_web/include/tweet.html' with tweet=tweet_%}
+				{% endfor %}
+			</article>
+			{% endif %}
+			<article class="trending">
+				<mark>{{ country }} trends</mark>
+				{% for trend_ in trending_trends %}
+					{% include 'twitter_web/include/trend.html' with trend=trend_ %}
+				{% endfor %}
+			</article>
+			<article class="news">
+				{% for trend_ in news_trends %}
+					{% include 'twitter_web/include/trend.html' with trend=trend_ %}
+				{% endfor %}
+			</article>
+		</section>
+
+	</main>
+
+	{% include 'twitter_web/include/footer.html' %}

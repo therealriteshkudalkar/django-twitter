@@ -1,6 +1,9 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     margin: 0px;
-    box-sizing: border-box;
     font-family: Helvetica, Arial, san-serif;
 }
 
@@ -22,11 +25,41 @@ body {
     align-items: center;
     flex-direction: column;
     font-size: 2rem;
-    width: 100%;
+    /* width: 100%; */
+}
+
+.main-content__title {
+    padding: 2rem;
+    margin: 0;
+    text-align: center;
+}
+
+.main-content__error {
+    margin: 0;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.main-content__error-message {
+    display: inline-block;
+    margin: 0;
+    color: #d8000c;
+    background-color: #ffbaba;
+    padding: 1rem;
+    border: 1px solid #d8000c;
+    border-radius: 0.5rem;
+}
+
+.main-content__success-message {
+    color: #4F8A10;
+	background-color: #DFF2BF;
+    border-color: #4F8A10;
 }
 
 .main-content__form-section {
-
+    width: 100%;
+    text-align: center;
+    padding: 2rem;
 }
 
 .main-content__form {
@@ -34,27 +67,27 @@ body {
 }
 
 .main-content__form-block {
-    width: 100%;
     margin: 2rem 0;
 }
 
 .main-content__form-input {
     appearance: none;
-    min-width: 10rem;
-    width: 25rem;
+    width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
     border: 2px solid #eeeeee;
     border-radius: 0.5rem;
 }
 
+.main-content__form-input--special {
+    width: 48.5%;
+    display: inline-block;
+}
+
 .main-content__form-input:focus,
 .main-content__form-input:active {
     appearance: none;
     -webkit-appearance: none;
-    border: none;
-    border-color: none;
-    -webkit-border-color: none;
     border: 2px solid #00acee;
     border-radius: 0.5rem;
 }
@@ -64,6 +97,7 @@ body {
     border-radius: 0.5rem;
     font-size: 1rem;
     border: 2px solid #eeeeee;
+    width: 100%;
 }
 
 .main-content__form-button {
@@ -72,9 +106,11 @@ body {
     color: #fff;
     background-color: #00acee;
     padding: 1rem;
+    font-size: 1rem;
     border-radius: 0.5rem;
     font-weight: bold;
     border: 0 solid #00acee;
+    width: 100%;
 }
 
 .main-content__form-button--light {
@@ -82,4 +118,5 @@ body {
     color: #00acee;
     background-color: #fff;
     border: 2px solid #00acee;
+    width: 100%;
 }

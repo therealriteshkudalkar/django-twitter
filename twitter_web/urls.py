@@ -7,7 +7,6 @@ app_name = 'twitter_web'
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('200', views.get_200, name='200'),
 
     path('register', views.register, name='register'),
     path('login', views.login, name='login'),
@@ -25,10 +24,12 @@ urlpatterns = [
 
     path('retweet', views.retweet, name='retweet'),
     path('like', views.like, name='like'),
+    path('impression', views.impression, name='impression'),
+
+    path('messages', views.message, name='message'),
+    path('conversation/<username>', views.conversation, name='conversation'),
 
     path('search', views.search, name='search'),
     path('notification', views.notification, name='notification'),
     path('bookmark', views.bookmark, name='bookmark'),
-    path('messages', views.message, name='message'),
-    path('impression', views.impression, name='impression'),
 ]

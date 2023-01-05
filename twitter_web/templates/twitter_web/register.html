@@ -12,8 +12,8 @@
             <h2 class="main-content__title">Create new account</h2>
         </div>
         {% if error_message %}
-        <div>
-            <p class="main-content__error-message">{{ error_message }}</p>
+        <div class="main-content__error">
+            <p class="main-content__error-message {% if error_message_color == 'green' %} .main-content__success-message {% endif %}">{{ error_message }}</p>
         </div>
         {% endif %}
         <article class="main-content__form-section">
@@ -22,13 +22,14 @@
 
                 <div class="main-content__form-block">
                     <!--                    <label for="fname">First Name</label>-->
-                    <input class="main-content__form-input" type="text" placeholder="First name" name="fname"
+                    <input class="main-content__form-input main-content__form-input--special" type="text" placeholder="First name" name="fname"
                         id="fname">
+                    <input class="main-content__form-input main-content__form-input--special" type="text" placeholder="Last name" name="lname" id="lname">
                 </div>
 
                 <div class="main-content__form-block">
                     <!--                    <label for="lname">Last Name</label>-->
-                    <input class="main-content__form-input" type="text" placeholder="Last name" name="lname" id="lname">
+
                 </div>
 
                 <div class="main-content__form-block">
@@ -309,10 +310,11 @@
                 <div class="main-content__form-block">
                     <input type="submit" class="main-content__form-button" value="Register"></input>
                 </div>
-                <div class="main-content__form-block">
-                    <button class="main-content__form-button main-content__form-button--light ">Log in</button>
-                </div>
             </form>
+            <div class="main-content__form-block">
+                <a href="{% url 'twitter_web:login' %}"
+                   class="main-content__form-button main-content__form-button--light ">Log in</a>
+            </div>
         </article>
     </section>
     {% include 'twitter_web/include/footer.html' %}

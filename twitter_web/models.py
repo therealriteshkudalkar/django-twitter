@@ -93,6 +93,17 @@ class Impression(models.Model):
     created_at = models.DateTimeField(default=now, editable=False)
 
 
+class Notification(models.Model):
+    class Action(models.TextChoices):
+        LIKE = ("1", "Like")
+        RETWEET = ("2", "Retweet")
+        COMMENT = ("3", "Comment")
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    user_to_notify = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_to_notify')
+    post = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='action_on_post')
+    action = models.CharField(max_length=20, choices=Action.choices, default=Action.LIKE)
+
+
 class Advertiser(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='advertiser_id')
