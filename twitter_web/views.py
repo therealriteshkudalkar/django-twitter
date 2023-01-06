@@ -2,14 +2,17 @@ import datetime as dt
 
 from cloudinary import uploader
 from datetime import datetime
+from itertools import chain
 
 from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
 from django.db import transaction
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
-from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, HeaderImage, TweetImage, Message, Like, Impression
+from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, HeaderImage, TweetImage, Message, Like, Impression, QuoteTweet, CommentTweet
 from .helper import int_to_string
 
 
@@ -71,6 +74,12 @@ def register(request):
 
         # check if email already exits or not
         try:
+            validate_email(email)
+        except ValidationError:
+            request.session["error_message"] = "Email entered is not valid!"
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
+        try:
             User.objects.get(email=email)
             request.session["error_message"] = "User with given email already exists."
             return HttpResponseRedirect(reverse('twitter_web:register'))
@@ -99,6 +108,7 @@ def register(request):
 
         new_user.save()
         request.session["error_message"] = "Registered successfully."
+        request.session["error_message_color"] = "green"
         return HttpResponseRedirect(reverse('twitter_web:login'))
 
 
@@ -170,8 +180,11 @@ def profile(request, username):
 
         user = user_query.first()
 
-        tweets = Tweet.objects.filter(user_id=user.id)
-        retweets = Retweet.objects.filter(user_id=user.id)
+        tweets = Tweet.objects.filter(user_id=user.id).order_by('-created_at')
+        retweets = Retweet.objects.filter(user_id=user.id).order_by("-created_at")
+
+        result_list = list(chain(tweets, retweets))
+
         followers = Follow.objects.filter(followee_id=user.id)
         followings = Follow.objects.filter(follower_id=user.id)
         bio = Bio.objects.filter(user_id=user.id).order_by('-created_at')
@@ -210,6 +223,7 @@ def profile(request, username):
                 'bio': bio_text,
                 'profile_image_url': profile_image_url,
                 'header_image_url': header_image_url,
+                'tweets': result_list,
             }
         }
 
@@ -217,8 +231,10 @@ def profile(request, username):
             session_user = session_user_query.first()
             # user is authenticated
             is_same_user = session_username.lower() == username.lower()
+            # print('is_same_user', is_same_user, session_username, username)
             template_context["user"]["is_logged_in"] = True
             template_context["user"]["is_same_user"] = is_same_user
+            template_context["user"]["session_user"] = session_user
 
             if is_same_user:
                 template_context["user"]["show_profile"] = True
@@ -290,8 +306,6 @@ def edit_profile(request):
         }
         return render(request, 'twitter_web/edit_profile.html', context=template_context)
     else:
-        # update information of the user
-
         is_private = len(request.POST.getlist("is_account_private")) != 0
 
         with transaction.atomic():
@@ -329,6 +343,100 @@ def edit_profile(request):
             return HttpResponseRedirect(reverse('twitter_web:profile', kwargs={'username': session_user.username}))
 
 
+def post_tweet(request):
+    if request.method == "POST":
+        session_username = request.session.get("username")
+
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+        else:
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+
+        is_comment = request.POST.get("is_comment", False)
+        is_quote_tweet = request.POST.get("is_quote_tweet", False)
+        is_commercial = request.POST.get("is_commercial", False)
+        tweet_text = request.POST.get("tweet_text", '')
+
+        with transaction.atomic():
+            new_tweet = Tweet.objects.create(
+                user_id=session_user,
+                text=tweet_text,
+                is_comment=is_comment,
+                is_quote_tweet=is_quote_tweet,
+                is_commercial=is_commercial,
+            )
+
+            if is_comment:
+                parent_tweet_id = request.POST.get("parent_tweet_id")
+                parent_tweet = Tweet.objects.filter(id=parent_tweet_id)
+                if parent_tweet.exists():
+                    CommentTweet.object.create(
+                        parent_tweet=parent_tweet.first(),
+                        comment_tweet=new_tweet,
+                    )
+
+            if is_quote_tweet:
+                quoted_tweet_id = request.POST.get("quoted_tweet_id")
+                quoted_tweet = Tweet.objects.filter(id=quoted_tweet_id)
+                if quoted_tweet.exists():
+                    QuoteTweet.objects.create(
+                        quoted_tweet=quoted_tweet.first(),
+                        actual_tweet=new_tweet,
+                    )
+
+            images = request.FILES.getlist("images")
+            counter = 0
+
+            if len(images) != 0:
+                # there are some images so download them
+                for image in images:
+                    if counter > 3:
+                        break
+                    # upload file
+                    TweetImage.objects.create(
+                        tweet_id=new_tweet,
+                        image=uploader.upload_resource(image),
+                    )
+                    counter += 1
+
+            return HttpResponseRedirect(reverse('twitter_web:profile', kwargs={'username': session_username}))
+
+
+def delete_tweet(request):
+    if request.method == "POST":
+        session_username = request.session.get("username")
+        session_user_filtered = User.objects.filter(username=session_username)
+        if session_user_filtered.exists():
+            pass
+
+
+def tweet(request, tweet_id):
+    if request.method == "GET":
+        pass
+
+
+def retweet(request):
+    # if user is logged in the add retweet to their tweets
+    # else ask them to login
+    if request.method == "POST":
+        pass
+
+
+def like(request):
+    # if user is logged in the add retweet to their tweets
+    # else ask them to login
+    if request.method == "POST":
+        pass
+
+
+def impression(request):
+    # register impression event if user is not logged in
+    if request.method == "POST":
+        pass
+
+
 def search(request):
     if request.method == "GET":
         # check if there is any user error
@@ -346,6 +454,10 @@ def search(request):
         # perform the search query
         query = request.POST.get("search")
         # you can use like command from postgresql
+        # search for people
+        # search for trending topics
+        # search for trending topics in news
+        # if user has logged in then search for trending topics tailored to him
         template_context = {}
         return render(request, 'twitter_web/search.html', context=template_context)
 
@@ -398,16 +510,6 @@ def follower_list(request, username):
         pass
 
 
-def tweet(request, tweet_id):
-    if request.method == "GET":
-        pass
-
-
-def post_tweet(request):
-    if request.method == "POST":
-        return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': ''}))
-
-
 def notification(request):
     if request.method == "GET":
         pass
@@ -416,26 +518,6 @@ def notification(request):
 def timeline(request, username):
     if request.method == "GET":
         # if user is logged in then show timeline else redirect to search page
-        pass
-
-
-def retweet(request):
-    # if user is logged in the add retweet to their tweets
-    # else ask them to login
-    if request.method == "POST":
-        pass
-
-
-def like(request):
-    # if user is logged in the add retweet to their tweets
-    # else ask them to login
-    if request.method == "POST":
-        pass
-
-
-def impression(request):
-    # register impression event if user is not logged in
-    if request.method == "POST":
         pass
 
 

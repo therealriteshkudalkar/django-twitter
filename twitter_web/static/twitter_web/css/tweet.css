@@ -1,0 +1,91 @@
+.single-tweet {
+    width: 100%;
+    border-bottom: 1px solid #eee;
+}
+
+.single-tweet__tweet-sections {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.single-tweet__tweet-profile-image-section {
+    display: inline-block;
+    padding: 1rem;
+}
+
+.single-tweet__tweet-profile-img {
+    width: 3rem;
+    height: 3rem;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 5rem;
+}
+
+.single-tweet__tweet-body-section {
+    display: inline-block;
+    width: 100%;
+    padding-right: 1rem;
+}
+
+.single-tweet__tweeter-info {
+    display: flex;
+    align-items: center;
+    margin: 0.5rem 0;
+}
+
+.single-tweet__tweeter-info > p {
+    margin: 0;
+}
+
+.single-tweet__tweeter-link {
+    text-decoration: none;
+    column-gap: 0.45rem;
+    margin-right: 0.5rem;
+}
+
+.single-tweet__tweeter-fname,
+.single-tweet__tweeter-lname {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.single-tweet__user-verified-tag {
+    width: 0.8rem;
+}
+
+.single-tweet__tweeter-username {
+    color: #7f7f7f;
+}
+
+.single-tweet__tweet-text {
+    margin: 0;
+}
+
+.single-tweet__image-container {
+    display: grid;
+    width: 100%;
+}
+
+.single-tweet__image {
+    width: 100%;
+    border-radius: 1rem;
+    margin: 0.5rem 0;
+}
+
+.single-tweet__actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0 0.5rem 0;
+}
+
+.single-tweet__action {
+    display: flex;
+    align-items: center;
+    column-gap: 0.5rem;
+}
+
+.single-tweet__action-image {
+    height: 1.5rem;
+}

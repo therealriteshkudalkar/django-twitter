@@ -2,10 +2,70 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
 </head>
 
 <body>
+  <div class="modal-backdrop"></div>
+
+  {% if not user.session_user %}
+  <div class="modal-login">
+    <h3 class="modal-login__title">Join Twitter</h3>
+    <p class="modal-login__subtitle">Login or register to complete the action.</p>
+    <div class="modal-login__buttons">
+      <a class="modal-login__button modal-login__button--login" href="{% url 'twitter_web:login' %}">Login</a>
+      <a class="modal-login__button modal-login__button--register" href="{% url 'twitter_web:register' %}">Register</a>
+    </div>
+    <button class="modal-login__cancel" id="cancel-button">X</button>
+  </div>
+  {% endif %}
+
+  <div class="modal-tweet">
+    <button class="modal-tweet__cancel" onclick="dismissTweetModal()">X</button>
+    <div class="modal-tweet__content">
+      <div>
+        {% if user.session_user.profile_image_user.all %}
+        {% for profile_image in user.session_user.profile_image_user.all|slice:":1" %}
+        <img class="modal-tweet__profile-image" src="{{ profile_image.image.url }}" alt="profile_image">
+        {% endfor %}
+        {% else %}
+        <img class="modal-tweet__profile-image" src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}" alt="profile_image">
+        {% endif %}
+      </div>
+      <form class="modal-tweet__form" action="{% url 'twitter_web:post_tweet' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- <input type="hidden" name="is_comment" value="False">
+        <input type="hidden" name="is_quote_tweet" value="False">
+        <input type="hidden" name="is_commercial" value="False"> -->
+        <div class="modal-tweet__form-text">
+          <textarea class="modal-tweet__text-area" name="tweet_text" rows="5" placeholder="What's happening?"></textarea>
+          <select class="modal-tweet__select-privacy" name="tweet_privacy">
+            <option name="everyone">Everyone</option>
+            <option name="people_you_follow">People you follow</option>
+            <option name="only_people_you_mention">Only people you mention</option>
+          </select>
+        </div>
+        <hr>
+        <div class="modal-tweet__form-images">
+          <div>
+            <label for="tweet_images">
+              <img class="modal-tweet__form-image-button" src="{% static 'twitter_web/assets/icons/icons8-add-image-96.png' %}">
+            </label>
+            <input id="tweet_images" type="file" name="images" multiple>
+          </div>
+          <div>
+            <input class="modal-tweet__form-tweet-button" type="submit" value="Tweet">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- <div class="modal-error">
+    <p></p>
+  </div> -->
+
   <div class="container">
 
     {% include 'twitter_web/include/nav-bar.html' %}
@@ -126,11 +186,14 @@
           </div>
         </section>
 
-        {% verbatim %}
         {% if user.show_profile %}
         <section class="main-section__tweets">
-          {% for tweet in tweets: %}
-          {% include 'twitter_web/include/tweet.html' with tweet_t=tweet %}
+          {% for tweet_ in user.tweets %}
+          {% if tweet.get_type == 'retweet' %}
+          {% include 'twitter_web/include/tweet.html' with is_retweeted=True tweet=tweet_.retweet_post_id retweeted_by=tweet_.retweet_user_id %}
+          {% else %}
+          {% include 'twitter_web/include/tweet.html' with is_retweeted=False tweet=tweet_ retweeted_by='' %}
+          {% endif %}
           {% endfor %}
         </section>
         {% else %}
@@ -142,22 +205,11 @@
           </p>
         </section>
         {% endif %}
-        {% endverbatim %}
       </article>
     </main>
 
     {% include 'twitter_web/include/search-bar.html' %}
 
-    <div class="modal-login">
-      <a href="{% url 'twitter_web:login' %}">Login</a>
-      <a href="{% url 'twitter_web:register' %}">Register</a>
-    </div>
-
-    <div class="modal-error">
-      <p></p>
-    </div>
-
-    <div class="modal-backdrop"></div>
   <div>
 
   <script src="{% static 'twitter_web/js/profile.js' %}"></script>

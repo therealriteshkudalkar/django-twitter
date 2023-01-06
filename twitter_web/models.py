@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from django.db import models
 from django.utils.timezone import now
 from cloudinary.models import CloudinaryField
@@ -29,7 +31,7 @@ class Bio(models.Model):
 
 class ProfileImage(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profile_image_user')
     image = CloudinaryField('profile_image')
     created_at = models.DateTimeField(default=now, editable=False)
 
@@ -51,10 +53,39 @@ class Follow(models.Model):
 class Tweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tweet_user_id')
-    created_at = models.DateTimeField(default=now, editable=False)
-    text = models.CharField(max_length=256)
+    text = models.CharField(max_length=256, blank=True)
     is_comment = models.BooleanField(default=False)
+    is_quote_tweet = models.BooleanField(default=False)
     is_commercial = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=now, editable=False)
+
+    def get_type(self):
+        return 'normal'
+
+    def age(self):
+        difference = (datetime.now(timezone.utc) - self.created_at).total_seconds()
+        if difference < 60:
+            return str(int(difference)) + "sec"
+        elif difference < 60 * 60:
+            return str(int(difference / 60)) + "m"
+        elif difference < 60 * 60 * 24:
+            return str(int(difference / (60 * 60))) + "hrs"
+        elif difference < 60 * 60 * 24 * 30:
+            return str(int(difference / (60 * 60 * 24))) + "days"
+        elif difference < 60 * 60 * 24 * 30 * 12:
+            return str(int(difference / (60 * 60 * 24 * 30))) + "months"
+        else:
+            return str(int(difference / (60 * 60 * 24 * 30 * 12))) + "yrs"
+
+
+class Retweet(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    post_id = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='retweet_post_id')
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='retweet_user_id')
+    created_at = models.DateTimeField(default=now, editable=False)
+
+    def get_type(self):
+        return 'retweet'
 
 
 class TweetImage(models.Model):
@@ -64,19 +95,16 @@ class TweetImage(models.Model):
     image = CloudinaryField('tweet_image')
 
 
-class Message(models.Model):
+class QuoteTweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
-    sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender_id')
-    receiver_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver_id')
-    text = models.CharField(max_length=1024)
-    created_at = models.DateTimeField(default=now, editable=False)
+    quoted_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='quoted_tweet')
+    actual_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='quote_tweet')
 
 
-class Retweet(models.Model):
+class CommentTweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
-    post_id = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='retweet_post_id')
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='retweet_user_id')
-    created_at = models.DateTimeField(default=now, editable=False)
+    parent_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='parent_tweet')
+    comment_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='comment_tweet')
 
 
 class Like(models.Model):
@@ -102,6 +130,14 @@ class Notification(models.Model):
     user_to_notify = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_to_notify')
     post = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='action_on_post')
     action = models.CharField(max_length=20, choices=Action.choices, default=Action.LIKE)
+
+
+class Message(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender_id')
+    receiver_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver_id')
+    text = models.CharField(max_length=1024)
+    created_at = models.DateTimeField(default=now, editable=False)
 
 
 class Advertiser(models.Model):

@@ -1,53 +1,72 @@
-<article>
-  {% if is_retweeted: %}
-    <div>
-      <span>Retweet Symbol</span>
-      <p>Retweeted By</p>
+{% load static %}
+<article class="single-tweet">
+  {% if is_retweeted %}
+    <div class="single-tweet__retweet">
+      <span><img src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}"></span>
+      <span>{{ tweet.user_id.fname }}</span>
+      <span>{{ tweet.user_id.lname }}</span>
+      <span>Retweeted</span>
     </div>
   {% endif %}
-  <div>
-    <div>
-      <img>
-    </div>
-    <div>
+  <div class="single-tweet__tweet-sections">
+    <a class="single-tweet__tweet-profile-image-section">
       <div>
-        <p>Name</p>
-        <p>Username</p>
-        <p>Tweet age</p>
+        {% for profile_image in tweet.user_id.profile_image_user.all|slice:":1" %}
+        <img class="single-tweet__tweet-profile-img" src="{{ profile_image.image.url }}">
+        {% endfor %}
       </div>
-      <div>
-        <p>Tweet Text</p>
-        <div>
-          <img>
-          <img>
-          <img>
-          <img>
+    </a>
+    <div class="single-tweet__tweet-body-section">
+      <div class="single-tweet__tweeter-info">
+        <p>
+          <a class="single-tweet__tweeter-link" href="{% url 'twitter_web:profile' username=tweet.user_id.username %}">
+            <span class="single-tweet__tweeter-fname">{{ tweet.user_id.fname }}</span>
+            <span class="single-tweet__tweeter-lname">{{ tweet.user_id.lname }}</span>
+            {% if tweet.user_id.is_verified %}
+            <span class="single-tweet__tweeter-verified-tag">
+              <img class="single-tweet__user-verified-tag"
+                src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}">
+              </span>
+            {% endif %}
+          </a>
+        </p>
+        <p class="single-tweet__tweeter-username">@{{ tweet.user_id.username }}﹒</p>
+        <p class="single-tweet__tweeter-username">{{ tweet.age }}</p>
+      </div>
+      <div class="single-tweet__tweet-body">
+        <p class="single-tweet__tweet-text">{{ tweet.text }}</p>
+        <div class="single-tweet__image-container">
+          {% for image_item in tweet.tweet_image_user_id.all %}
+          <img class="single-tweet__image" src="{{ image_item.image.url }}">
+          {% endfor %}
         </div>
-        {% if quoted_tweet: %}
+        {% if tweet.is_quote_tweet %}
         <div>
+          {% verbatim %}
           {% include 'twitter_web/include/quoted_tweet.html' %}
+          {% endverbatim %}
         </div>
         {% endif %}
       </div>
-      <div>
-        <div>
-          <span>Impressions</span>
-          <span>Numbers</span>
+      <div class="single-tweet__actions">
+        <div class="single-tweet__action">
+          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-bar-chart-96.png' %}"></span>
+          <span>{{ tweet.impression_post_id.all.count }}</span>
         </div>
-        <div>
-          <span>Comments Icon</span>
-          <span>Numbers</span>
+        <div class="single-tweet__action">
+          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-speech-bubble-96.png' %}"></span>
+          <span>{{ tweet.parent_tweet.all.count }}</span>
         </div>
-        <div>
-          <span>Retweets Icon</span>
-          <span>Numbers</span>
+        <div class="single-tweet__action">
+          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}"></span>
+          <span>{{ tweet.retweet_post_id.all.count }}</span>
         </div>
-        <div>
-          <span>Likes Icon</span>
-          <span>Numbers</span>
+        <div class="single-tweet__action">
+          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-heart-96.png' %}"></span>
+          <span>{{ tweet.like_post_id.all.count }}</span>
         </div>
-        <div>
-          <span>Share Link</span>
+        <div class="single-tweet__action">
+          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-uninstalling-updates-96.png' %}"></span>
         </div>
       </div>
     </div>

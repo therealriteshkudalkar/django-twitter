@@ -17,6 +17,7 @@ urlpatterns = [
     path('timeline/<username>', views.timeline, name='timeline'),
     path('tweet/<tweet_id>', views.tweet, name='tweet'),
     path('post_tweet', views.post_tweet, name='post_tweet'),
+    path('delete_tweet', views.delete_tweet, name='delete_tweet'),
 
     path('follow', views.follow, name='follow'),
     path('follower/<username>', views.follower_list, name='follower_list'),

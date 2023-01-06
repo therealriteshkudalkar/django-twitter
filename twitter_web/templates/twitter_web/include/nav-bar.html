@@ -40,8 +40,13 @@
       <li class="navigation-section__nav-item">
         <div>
           <a class="navigation-section__nav-item-link navigation-section__nav-item-link--blue"
-            href="{% url 'twitter_web:search' %}"><img
-              src="{% static 'twitter_web/assets/icons/icons8-quill-with-ink-96.png' %}"></a>
+             href="javascript:;"
+             id="tweet-button"
+             onclick="showTweetModal()">
+            <div>
+              <img src="{% static 'twitter_web/assets/icons/icons8-quill-with-ink-96.png' %}">
+            </div>
+          </a>
         </div>
       </li>
       {% endif %}

@@ -43,6 +43,28 @@ function onFollowButtonClick() {
     });
 }
 
-function dismissInvokeModal() {
+function showTweetModal() {
+    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+    backdrop.classList.add("show");
+    backdrop.classList.remove("hide");
+    const tweetModal = document.getElementsByClassName("modal-tweet")[0];
+    tweetModal.classList.add("show");
+    tweetModal.classList.remove("hide");
+}
+
+function dismissTweetModal() {
+    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+    backdrop.classList.add("hide");
+    backdrop.classList.remove("show");
+    const tweetModal = document.getElementsByClassName("modal-tweet")[0];
+    tweetModal.classList.add("hide");
+    tweetModal.classList.remove("show");
+}
+
+function showErrorModal() {
+    // dismiss the modal which is visible
+}
+
+function showLoginModal() {
     // dismiss the modal which is visible
 }
