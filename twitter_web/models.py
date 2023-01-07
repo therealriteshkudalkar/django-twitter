@@ -54,6 +54,8 @@ class Tweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tweet_user_id')
     text = models.CharField(max_length=256, blank=True)
+    likes = models.ManyToManyField(User, default=None, null=True, blank=True, related_name='liked_by_users')
+    retweets = models.ManyToManyField(User, default=None, null=True, blank=True, related_name='retweeted_by_users')
     is_comment = models.BooleanField(default=False)
     is_quote_tweet = models.BooleanField(default=False)
     is_commercial = models.BooleanField(default=False)
@@ -65,17 +67,17 @@ class Tweet(models.Model):
     def age(self):
         difference = (datetime.now(timezone.utc) - self.created_at).total_seconds()
         if difference < 60:
-            return str(int(difference)) + "sec"
+            return str(int(difference)) + "s"
         elif difference < 60 * 60:
             return str(int(difference / 60)) + "m"
         elif difference < 60 * 60 * 24:
-            return str(int(difference / (60 * 60))) + "hrs"
+            return str(int(difference / (60 * 60))) + "h"
         elif difference < 60 * 60 * 24 * 30:
-            return str(int(difference / (60 * 60 * 24))) + "days"
+            return str(int(difference / (60 * 60 * 24))) + "d"
         elif difference < 60 * 60 * 24 * 30 * 12:
-            return str(int(difference / (60 * 60 * 24 * 30))) + "months"
+            return str(int(difference / (60 * 60 * 24 * 30))) + "mnths"
         else:
-            return str(int(difference / (60 * 60 * 24 * 30 * 12))) + "yrs"
+            return str(int(difference / (60 * 60 * 24 * 30 * 12))) + "y"
 
 
 class Retweet(models.Model):

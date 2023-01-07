@@ -62,9 +62,19 @@ function dismissTweetModal() {
 }
 
 function showErrorModal() {
-    // dismiss the modal which is visible
+    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+    backdrop.classList.add("show");
+    backdrop.classList.remove("hide");
+    const errorModal = document.getElementsByClassName("modal-tweet")[0];
+    errorModal.classList.add("show");
+    errorModal.classList.remove("hide");
 }
 
-function showLoginModal() {
-    // dismiss the modal which is visible
+function dismissErrorModal() {
+    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+    backdrop.classList.add("hide");
+    backdrop.classList.remove("show");
+    const errorModal = document.getElementsByClassName("modal-tweet")[0];
+    errorModal.classList.add("hide");
+    errorModal.classList.remove("show");
 }

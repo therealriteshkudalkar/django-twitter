@@ -68,7 +68,7 @@
 
   <div class="container">
 
-    {% include 'twitter_web/include/nav-bar.html' %}
+    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
 
     <main class="main-section">
       <header class="main-section__header">
@@ -189,10 +189,10 @@
         {% if user.show_profile %}
         <section class="main-section__tweets">
           {% for tweet_ in user.tweets %}
-          {% if tweet.get_type == 'retweet' %}
-          {% include 'twitter_web/include/tweet.html' with is_retweeted=True tweet=tweet_.retweet_post_id retweeted_by=tweet_.retweet_user_id %}
+          {% if tweet_.get_type == 'retweet' %}
+          {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
           {% else %}
-          {% include 'twitter_web/include/tweet.html' with is_retweeted=False tweet=tweet_ retweeted_by='' %}
+          {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
           {% endif %}
           {% endfor %}
         </section>
@@ -213,5 +213,6 @@
   <div>
 
   <script src="{% static 'twitter_web/js/profile.js' %}"></script>
+  <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
 
 {% include 'twitter_web/include/footer.html' %}

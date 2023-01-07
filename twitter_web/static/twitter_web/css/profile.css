@@ -198,7 +198,7 @@ hr {
     width: 100vw;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 1fr 5fr;
+    grid-template-columns: 1fr 7fr;
     grid-template-areas: "nav main";
 }
 
@@ -213,7 +213,7 @@ hr {
     display: flex;
     align-items: center;
     column-gap: 1rem;
-    position: absolute;
+    position: fixed;
     background: rgba(255, 255, 255, 0.75);
     width: 100%;
     top: 0;
@@ -251,6 +251,7 @@ hr {
 
 .main-section__includer {
     overflow-y: scroll;
+    margin-top: 4.125rem;
 }
 
 .main-section__nav-item-link {

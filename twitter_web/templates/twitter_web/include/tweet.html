@@ -2,18 +2,22 @@
 <article class="single-tweet">
   {% if is_retweeted %}
     <div class="single-tweet__retweet">
-      <span><img src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}"></span>
-      <span>{{ tweet.user_id.fname }}</span>
-      <span>{{ tweet.user_id.lname }}</span>
-      <span>Retweeted</span>
+      <span class="single-tweet__retweet-img"><img src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}"></span>
+      <span class="single-tweet__retweet-text">{{ retweeted_by.fname }}</span>
+      <span class="single-tweet__retweet-text">{{ retweeted_by.lname }}</span>
+      <span class="single-tweet__retweet-text">Retweeted</span>
     </div>
   {% endif %}
   <div class="single-tweet__tweet-sections">
     <a class="single-tweet__tweet-profile-image-section">
       <div>
+        {% if tweet.user_id.profile_image_user.all %}
         {% for profile_image in tweet.user_id.profile_image_user.all|slice:":1" %}
         <img class="single-tweet__tweet-profile-img" src="{{ profile_image.image.url }}">
         {% endfor %}
+        {% else %}
+        <img class="single-tweet__tweet-profile-img" src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+        {% endif %}
       </div>
     </a>
     <div class="single-tweet__tweet-body-section">
@@ -54,16 +58,42 @@
           <span>{{ tweet.impression_post_id.all.count }}</span>
         </div>
         <div class="single-tweet__action">
-          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-speech-bubble-96.png' %}"></span>
-          <span>{{ tweet.parent_tweet.all.count }}</span>
+          <a href="{% url 'twitter_web:tweet' tweet_id=tweet.id %}">
+            <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-speech-bubble-96.png' %}"></span>
+            <span>{{ tweet.parent_tweet.all.count }}</span>
+          </a>
         </div>
         <div class="single-tweet__action">
-          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}"></span>
-          <span>{{ tweet.retweet_post_id.all.count }}</span>
+          <form onsubmit="return false" action="{% url 'twitter_web:retweet' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tweet_id" value="{{ tweet.id }}">
+            <input type="hidden" name="retweet_image_url" value="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}">
+            <input type="hidden" name="retweeted_image_url" value="{% static 'twitter_web/assets/icons/icons8-repeat-96-green.png' %}">
+            {% if session_user in tweet.retweets.all %}
+            <input type="hidden" name="retweet_value" value="Retweeted">
+            <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-repeat-96-green.png' %}" onclick="onRetweetButtonClick(this, {{ tweet.id }})"></span>
+            {% else %}
+            <input type="hidden" name="retweet_value" value="Not retweeted">
+            <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}" onclick="onRetweetButtonClick(this, {{ tweet.id }})"></span>
+            {% endif %}
+            <span>{{ tweet.retweet_post_id.all.count }}</span>
+          </form>
         </div>
         <div class="single-tweet__action">
-          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-heart-96.png' %}"></span>
-          <span>{{ tweet.like_post_id.all.count }}</span>
+          <form onsubmit="return false" action="{% url 'twitter_web:like' %}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="tweet_id" value="{{ tweet.id }}">
+            <input type="hidden" name="like_image_url" value="{% static 'twitter_web/assets/icons/icons8-heart-96.png' %}">
+            <input type="hidden" name="liked_image_url" value="{% static 'twitter_web/assets/icons/icons8-heart-96-red.png' %}">
+            {% if session_user in tweet.likes.all %}
+            <input type="hidden" name="like_value" value="Liked">
+            <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-heart-96-red.png' %}" onclick="onLikeButtonClick(this, {{ tweet.id }})"></span>
+            {% else %}
+            <input type="hidden" name="like_value" value="Not liked">
+            <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-heart-96.png' %}" onclick="onLikeButtonClick(this, {{ tweet.id }})"></span>
+            {% endif %}
+            <span>{{ tweet.like_post_id.all.count }}</span>
+          </form>
         </div>
         <div class="single-tweet__action">
           <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-uninstalling-updates-96.png' %}"></span>

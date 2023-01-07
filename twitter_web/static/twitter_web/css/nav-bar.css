@@ -1,5 +1,6 @@
 .navigation-section {
     text-align: center;
+    border-right: 1px solid #eee;
 }
 
 .navigation-section__header {
@@ -8,7 +9,7 @@
 }
 
 .navigation-section__header-image {
-    width: 3rem;
+    width: 2.5rem;
     margin-top: 2rem;
 }
 
@@ -16,6 +17,10 @@
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 .navigation-section__nav-item > div {
@@ -31,7 +36,8 @@
 
 .navigation-section__nav-item-link img {
     display: block;
-    width: 3rem;
+    width: 2.5rem;
+    margin: 0;
     margin: 0.5rem;
 }
 

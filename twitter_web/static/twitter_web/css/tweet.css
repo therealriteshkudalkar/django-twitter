@@ -3,6 +3,26 @@
     border-bottom: 1px solid #eee;
 }
 
+.single-tweet__retweet {
+    display: flex;
+    align-items: center;
+    margin-left: 3rem;
+    margin-top: 0.75rem;
+    column-gap: 0.5rem;
+}
+
+.single-tweet__retweet-img {
+    margin-right: 0.5rem;
+}
+
+.single-tweet__retweet-img img {
+    height: 1.5rem;
+}
+
+.single-tweet__retweet-text {
+    color: #7f7f7f;
+}
+
 .single-tweet__tweet-sections {
     display: flex;
     flex-direction: row;
@@ -84,8 +104,28 @@
     display: flex;
     align-items: center;
     column-gap: 0.5rem;
+    color: #7f7f7f;
+}
+
+.single-tweet__action > a {
+    text-decoration: none;
+    color: #7f7f7f;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.25rem;
+}
+
+.single-tweet__action > form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.25rem;
 }
 
 .single-tweet__action-image {
     height: 1.5rem;
+    cursor: pointer;
 }

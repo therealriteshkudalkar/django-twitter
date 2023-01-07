@@ -421,20 +421,108 @@ def retweet(request):
     # if user is logged in the add retweet to their tweets
     # else ask them to login
     if request.method == "POST":
-        pass
+        post_id = request.POST.get("tweet_id")
+        filtered_posts = Tweet.objects.filter(id=post_id)
+        post = filtered_posts.first()
+        response = {}
+
+        if not filtered_posts.exists():
+            response["response"] = "error"
+            response["response_message"] = "Post does not exist!"
+            return JsonResponse(data=response, safe=False)
+
+        session_username = request.session.get("username")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            existing_retweet = Retweet.objects.filter(post_id=post, user_id=session_user)
+            if existing_retweet.exists():
+                post.retweets.remove(session_user)
+                existing_retweet.delete()
+                response["response"] = "successful"
+                response["message"] = "Un-retweet successfully"
+            else:
+                post.retweets.add(session_user)
+                Retweet.objects.create(
+                    user_id=session_user,
+                    post_id=post
+                )
+                response["response"] = "successful"
+                response["message"] = "Retweeted successfully"
+            post.save()
+        else:
+            response["response"] = "login"
+            response["response_message"] = "You need to login to proceed with the action."
+        return JsonResponse(data=response, safe=False)
 
 
 def like(request):
-    # if user is logged in the add retweet to their tweets
-    # else ask them to login
     if request.method == "POST":
-        pass
+        post_id = request.POST.get("tweet_id")
+        filtered_posts = Tweet.objects.filter(id=post_id)
+        post = filtered_posts.first()
+        response = {}
+
+        if not filtered_posts.exists():
+            response["response"] = "error"
+            response["response_message"] = "Post does not exist!"
+            return JsonResponse(data=response, safe=False)
+
+        session_username = request.session.get("username")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            existing_like = Like.objects.filter(post_id=post, user_id=session_user)
+            if existing_like.exists():
+                existing_like.first().delete()
+                post.likes.remove(session_user)
+                response["response"] = "successful"
+                response["message"] = "Tweet unliked successfully"
+            else:
+                Like.objects.create(
+                    user_id=session_user,
+                    post_id=post
+                )
+                post.likes.add(session_user)
+                response["response"] = "successful"
+                response["message"] = "Liked successfully"
+            post.save()
+        else:
+            response["response"] = "login"
+            response["response_message"] = "You need to login to proceed with the action."
+        return JsonResponse(data=response, safe=False)
 
 
 def impression(request):
     # register impression event if user is not logged in
     if request.method == "POST":
-        pass
+        post_id = request.POST.get("tweet_id")
+        filtered_posts = Tweet.objects.filter(id=post_id)
+        post = filtered_posts.first()
+        response = {}
+
+        if not post.exists():
+            response["response"] = "error"
+            response["response_message"] = "Post does not exist!"
+            return JsonResponse(data=response, safe=False)
+
+        session_username = request.session.get("username")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            Impression.objects.create(
+                user_id=session_user,
+                post_id=post
+            )
+            response["response"] = "successful"
+            response["message"] = "Liked successfully"
+        else:
+            response["response"] = "login"
+            response["response_message"] = "You need to login to proceed with the action."
+        return JsonResponse(data=response, safe=False)
 
 
 def search(request):
@@ -500,6 +588,25 @@ def follow(request):
         return JsonResponse(data=response, safe=False)
 
 
+def timeline(request, username):
+    if request.method == "GET":
+        # if user is logged in then show timeline else redirect to search page
+        session_username = request.session.get("username", " ")
+        session_user_filtered = User.objects.filter(username=session_username)
+        session_user = session_user_filtered.first()
+
+        if session_user_filtered.exists():
+            if username.lower() == session_username.lower():
+                # get all the tweets by users who the session user follows and arrange them by created at
+                template_context = {}
+                return render(request, 'twitter_web/timeline.html', context=template_context)
+            else:
+                return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': session_username}))
+        else:
+            request.session["error_message"] = "Page does not exist"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+
+
 def following_list(request, username):
     if request.method == "GET":
         pass
@@ -512,12 +619,6 @@ def follower_list(request, username):
 
 def notification(request):
     if request.method == "GET":
-        pass
-
-
-def timeline(request, username):
-    if request.method == "GET":
-        # if user is logged in then show timeline else redirect to search page
         pass
 
 

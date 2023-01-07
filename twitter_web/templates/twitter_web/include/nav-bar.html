@@ -28,7 +28,7 @@
             src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}"></a>
       </li>
       <li class="navigation-section__nav-item">
-        <a class="navigation-section__nav-item-link" href="/profile/{{ user.username }}"><img
+        <a class="navigation-section__nav-item-link" href="/profile/{{ session_user.username }}"><img
             src="{% static 'twitter_web/assets/icons/icons8-administrator-male-96.png' %}"></a>
       </li>
       {% endif %}
