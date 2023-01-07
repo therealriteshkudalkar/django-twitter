@@ -598,7 +598,18 @@ def timeline(request, username):
         if session_user_filtered.exists():
             if username.lower() == session_username.lower():
                 # get all the tweets by users who the session user follows and arrange them by created at
-                template_context = {}
+                # get all followers of user
+                followings = Follow.objects.filter(follower_id=session_user).values_list('followee_id')
+                tweets_of_followings = Tweet.objects.filter(user_id__in=followings).order_by('-created_at')
+                retweets_of_followings = Retweet.objects.filter(user_id__in=followings).order_by('-created_at')
+                result_list = list(chain(tweets_of_followings, retweets_of_followings))
+                template_context = {
+                    'user': {
+                        'session_user': session_user,
+                        'tweets': result_list,
+                        'is_logged_in': True,
+                    }
+                }
                 return render(request, 'twitter_web/timeline.html', context=template_context)
             else:
                 return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': session_username}))

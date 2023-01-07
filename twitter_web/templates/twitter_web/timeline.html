@@ -1,23 +1,26 @@
 {% include 'twitter_web/include/head.html' with title=user.name %}
 {% load static %}
+
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
-<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/timeline.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
 </head>
 
 <body>
   <div class="container">
-    {% include 'twitter_web/include/nav-bar.html' %}
+    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
 
     <main class="main-section">
       <header class="header-section">
         <div>
           <h3>Home</h3>
+          <!-- <span><img src=""></span> -->
         </div>
       </header>
       <section class="make-tweet-section">
-        <div>
+        <div class="make-tweet-section__profile-image">
           <div>
             {% if user.session_user.profile_image_user.all %}
             {% for profile_image in user.session_user.profile_image_user.all|slice:":1" %}
@@ -29,7 +32,7 @@
             {% endif %}
           </div>
         </div>
-        <div>
+        <div class="make-tweet-section__tweet">
           <form class="modal-tweet__form" action="{% url 'twitter_web:post_tweet' %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             <!-- <input type="hidden" name="is_comment" value="False">
@@ -60,11 +63,10 @@
       </section>
       <section class="tweet-section">
         {% for tweet_ in user.tweets %}
-        {% if tweet.get_type == 'retweet' %}
-        {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.retweet_post_id is_retweeted=True retweeted_by='hello' %}
-        retweeted_by=tweet_.retweet_user_id %}
+        {% if tweet_.get_type == 'retweet' %}
+        {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
         {% else %}
-        {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
+        {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False retweeted_by='' %}
         {% endif %}
         {% endfor %}
       </section>
@@ -72,5 +74,7 @@
 
     {% include 'twitter_web/include/search-bar.html' %}
   </div>
+
+  <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
 
   {% include 'twitter_web/include/footer.html' %}

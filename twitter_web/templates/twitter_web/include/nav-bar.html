@@ -12,7 +12,7 @@
       </li>
       {% if user.is_logged_in %}
       <li class="navigation-section__nav-item">
-        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:timeline' username=user.username %}"><img
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:timeline' username=session_user.username %}"><img
             src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}"></a>
       </li>
       <li class="navigation-section__nav-item">

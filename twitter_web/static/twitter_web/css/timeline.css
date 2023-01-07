@@ -1,0 +1,53 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    margin: 0 auto;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
+    grid-template-areas: "nav main";
+}
+
+.main-section {
+    overflow-y: scroll;
+    height: 100vh;
+    position: relative;
+}
+
+.header-section {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+    position: fixed;
+    background: rgba(255, 255, 255, 0.75);
+    width: 100%;
+    top: 0;
+    z-index: 1;
+    backdrop-filter: blur(15px);
+}
+
+.make-tweet-section {
+    margin-top: 4.685rem;
+    padding: 0.5rem 1.5rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+    column-gap: 1.25rem;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 0.5rem;
+}
+
+.make-tweet-section__tweet {
+    width: 100%;
+}
