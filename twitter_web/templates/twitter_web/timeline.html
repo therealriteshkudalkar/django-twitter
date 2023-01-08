@@ -13,7 +13,7 @@
   {% include 'twitter_web/include/tweet-modal.html' %}
 
   <div class="container">
-    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
+    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user page='timeline' %}
 
     <main class="main-section">
       <header class="header-section">

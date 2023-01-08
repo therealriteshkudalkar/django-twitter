@@ -76,7 +76,7 @@
             <input type="hidden" name="retweet_value" value="Not retweeted">
             <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-repeat-96.png' %}" onclick="onRetweetButtonClick(this, {{ tweet.id }})"></span>
             {% endif %}
-            <span>{{ tweet.retweet_post_id.all.count }}</span>
+            <span class="single-tweet__retweet-count">{{ tweet.retweet_post_id.all.count }}</span>
           </form>
         </div>
         <div class="single-tweet__action">
@@ -92,37 +92,48 @@
             <input type="hidden" name="like_value" value="Not liked">
             <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-heart-96.png' %}" onclick="onLikeButtonClick(this, {{ tweet.id }})"></span>
             {% endif %}
-            <span>{{ tweet.like_post_id.all.count }}</span>
+            <span class="single-tweet__like-count">{{ tweet.like_post_id.all.count }}</span>
           </form>
         </div>
         <div class="single-tweet__action">
           <span class="single-tweet__action-spl-span">
             <div class="single-tweet__more-options">
-              <div>
+              <div class="single-tweet__more-options-container">
+                <div class="single-tweet__image-box">
+                  <img class="single-tweet__more-options-image" src="{% static 'twitter_web/assets/icons/icons8-copy-link-96.png' %}">
+                  <span>Copy Link</span>
+                </div>
+
                 <form method="POST" action="{% url 'twitter_web:bookmark' %)">
                   {% csrf_token %}
                   <input type="hidden" name="tweet_id" value="{{ tweet.id }}">
-                  {% if already_bookmarked %}
-                  {% else %} 
-                  {% endif %}
-                  <img src="">
-                  <span>Bookmark</span>
+                  <div class="single-tweet__image-box">
+                    {% if already_bookmarked %}
+                    <img class="single-tweet__more-options-image" src="{% static 'twitter_web/assets/icons/icons8-bookmark-96-fill.png' %}">
+                    <span>Remove Bookmark</span>
+                    {% else %} 
+                    <img class="single-tweet__more-options-image" src="{% static 'twitter_web/assets/icons/icons8-bookmark-96.png' %}">
+                    <span>Add Bookmark</span>
+                    {% endif %}
+                  </div>
                 </form>
+
+                {% if session_user == tweet.user_id %}
                 <form method="POST" action="{% url 'twitter_web:delete_tweet' %}">
                   {% csrf_token %}
                   <input type="hidden" name="tweet_id" value="{{ tweet.id }}">
-                  <img src="">
-                  <span>Delete Tweet</span>
+                  <div class="single-tweet__image-box">
+                    <img class="single-tweet__more-options-image" src="{% static 'twitter_web/assets/icons/icons8-trash-96.png' %}">
+                    <span>Delete Tweet</span>
+                  </div>
                 </form>
-                <div>
-                  <img src="">
-                  <span>Copy Link</span>
-                </div>
-                <button class="single-tweet__more-option-cancel">X</button>
+                {% endif %}
+                
+                <button class="single-tweet__more-options-cancel" onclick="dismissMoreTweetOptionModal(this, {{ tweet_id }})">X</button>
               </div>
               <div class="single-tweet__more-options-pointer"></div>
             </div>
-            <img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-uninstalling-updates-96.png' %}">
+            <img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-uninstalling-updates-96.png' %}" onclick="showMoreTweetOptionModal(this, {{ tweet.id }})">
           </span>
         </div>
       </div>

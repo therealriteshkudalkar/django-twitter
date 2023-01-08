@@ -1,6 +1,7 @@
 function onRetweetButtonClick(context, tweet_id) {
     let retweetImage = context;
     let form = context.parentElement.parentElement;
+    let retweetCount = form.querySelector(".single-tweet__retweet-count");
 
     let retweetImageUrl = form.querySelector("input[name='retweet_image_url']").value;
     let retweetedImageUrl = form.querySelector("input[name='retweeted_image_url']").value;
@@ -14,7 +15,7 @@ function onRetweetButtonClick(context, tweet_id) {
     data.append('retweet_value', retweetValue.value);
     data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-    console.log(url, retweetValue, csrfmiddlewaretoken);
+    // console.log(url, retweetValue, csrfmiddlewaretoken);
 
     fetch(url, {
         method: "POST",
@@ -35,6 +36,7 @@ function onRetweetButtonClick(context, tweet_id) {
                 retweetValue.value = 'Retweeted';
                 retweetImage.src = retweetedImageUrl;
             }
+            retweetCount.innerHTML = data["count"];
         } else if (data["response"] === "login") {
             // show modal asking user to login
             showLoginModal();
@@ -48,6 +50,7 @@ function onRetweetButtonClick(context, tweet_id) {
 function onLikeButtonClick(context, tweet_id) {
     let likeImage = context;
     let form = context.parentElement.parentElement;
+    let likeCount = form.querySelector(".single-tweet__like-count");
 
     let likeImageUrl = form.querySelector("input[name='like_image_url']").value;
     let likedImageUrl = form.querySelector("input[name='liked_image_url']").value;
@@ -61,7 +64,7 @@ function onLikeButtonClick(context, tweet_id) {
     data.append('like_value', like_value.value);
     data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
 
-    console.log(url, like_value, csrfmiddlewaretoken);
+    // console.log(url, like_value, csrfmiddlewaretoken);
 
     fetch(url, {
         method: "POST",
@@ -82,6 +85,7 @@ function onLikeButtonClick(context, tweet_id) {
                 like_value.value = 'Liked';
                 likeImage.src = likedImageUrl;
             }
+            likeCount.innerHTML = data["count"];
         } else if (data["response"] === "login") {
             // show modal asking user to login
             showLoginModal();
@@ -90,4 +94,23 @@ function onLikeButtonClick(context, tweet_id) {
             showErrorModal(data["response_message"]);
         }
     });
+}
+
+function onDeleteTweetButtonClick() {
+    //
+}
+
+function onBookmarkTweetButtonClick() {
+    //
+}
+
+function showMoreTweetOptionModal(context, tweet_id) {
+    const contextParent = context.parentElement;
+    const modal = contextParent.querySelector(".single-tweet__more-options");
+    modal.style.display = "block";
+}
+
+function dismissMoreTweetOptionModal(context, tweet_id) {
+    const modal = context.parentElement.parentElement;
+    modal.style.display = "none";
 }

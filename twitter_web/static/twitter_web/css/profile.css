@@ -35,10 +35,10 @@ body {
     column-gap: 1rem;
     position: fixed;
     background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px);
     width: 100%;
     top: 0;
     z-index: 1;
-    backdrop-filter: blur(15px);
 }
 
 .main-section__go-back {
@@ -217,5 +217,19 @@ body {
     color: #7f7f7f;
 }
 
+.main-section__tab-links {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #eeeeee;
+    position: sticky;
+    top: 4.15rem;
+    background-color: #fff;
+}
 
+.main-section__tab-link {
+    padding: 0.75rem;
+}
 
+.main-section__tab-link--selected {
+    border-bottom: 2px solid #00acee;
+}

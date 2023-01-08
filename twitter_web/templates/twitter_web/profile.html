@@ -31,7 +31,7 @@
 
   <div class="container">
 
-    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
+    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user page='profile' %}
 
     <main class="main-section">
       <header class="main-section__header">
@@ -97,9 +97,9 @@
               </form>
               {% endif %}
 
-              <button class="main-section__more-option">
+              <!-- <button class="main-section__more-option">
                 <img src="{% static 'twitter_web/assets/icons/icons8-menu-vertical-96.png' %}">
-              </button>
+              </button> -->
             </div>
           </div>
         </section>
@@ -150,15 +150,30 @@
         </section>
 
         {% if user.show_profile %}
-        <section class="main-section__tweets">
-          {% for tweet_ in user.tweets %}
-          {% if tweet_.get_type == 'retweet' %}
-          {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
-          {% else %}
-          {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
-          {% endif %}
-          {% endfor %}
-        </section>
+        <div class="main-section__tab-links">
+          <div class="main-section__tab-link main-section__tab-link--selected">Tweets</div>
+          <div class="main-section__tab-link">Likes</div>
+        </div>
+        <div class="main-section__tabs">
+          <section class="main-section__tweets">
+            {% for tweet_ in user.tweets %}
+            {% if tweet_.get_type == 'retweet' %}
+            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
+            {% else %}
+            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
+            {% endif %}
+            {% endfor %}
+          </section>
+          <section class="main-section__liked-tweets">
+            {% for tweet_ in user.liked_tweets %}
+            {% if tweet_.get_type == 'retweet' %}
+            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
+            {% else %}
+            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
+            {% endif %}
+            {% endfor %}
+          </section>
+        </div>
         {% else %}
         <section class="main-section__no-tweets">
           <h3>These tweets are protected.</h3>

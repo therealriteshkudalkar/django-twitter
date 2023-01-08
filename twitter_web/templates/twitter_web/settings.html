@@ -1,0 +1,53 @@
+{% include 'twitter_web/include/head.html' with title=user.name %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+</head>
+
+<body>
+  
+  {% include 'twitter_web/include/tweet-modal.html' %}
+
+  {% if not user.session_user %}
+  <div class="modal-login">
+    <h3 class="modal-login__title">Join Twitter</h3>
+    <p class="modal-login__subtitle">Login or register to complete the action.</p>
+    <div class="modal-login__buttons">
+      <a class="modal-login__button modal-login__button--login" href="{% url 'twitter_web:login' %}">Login</a>
+      <a class="modal-login__button modal-login__button--register" href="{% url 'twitter_web:register' %}">Register</a>
+    </div>
+    <button class="modal-login__cancel" id="cancel-button" onclick="dismissLoginModal()">X</button>
+  </div>
+  {% endif %}
+
+  <div class="modal-error">
+    <h3 class="modal-erro__head">Error</h3>
+    <p class="modal-error__message"></p>
+    <button class="modal-error__cancel" onclick="dismissErrorModal()">X</button>
+  </div>
+
+  <div class="container">
+
+    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
+
+    <main class="main-section">
+        <header>
+            <h1>Settings</h1>
+        </header>
+        
+        <article class="main-section__includer">
+            
+        </article>
+    </main>
+    
+    {% include 'twitter_web/include/search-bar.html' %}
+  
+  <div>
+
+  <script src="{% static 'twitter_web/js/profile.js' %}"></script>
+  <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+
+{% include 'twitter_web/include/footer.html' %}

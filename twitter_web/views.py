@@ -1,5 +1,6 @@
 import datetime as dt
 
+import django.db
 from cloudinary import uploader
 from datetime import datetime
 from itertools import chain
@@ -8,11 +9,11 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.shortcuts import render, reverse
 from django.http import HttpResponseRedirect, JsonResponse
 from django.utils import timezone
-from django.db import transaction
+from django.db import transaction, Error
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
-from .models import User, Bio, ProfileImage, HeaderImage, Follow, Tweet, TweetImage, QuoteTweet, CommentTweet, Retweet,\
+from .models import User, Bio, ProfileImage, HeaderImage, Follow, Tweet, TweetImage, QuoteTweet, CommentTweet, Retweet, \
     Like, Impression, Message, Notification, Advertiser, Campaign
 from .helper import int_to_string
 
@@ -43,6 +44,7 @@ def register(request):
         template_context = {
             'error_message': error_message,
             'error_message_color': error_message_color,
+            'date': datetime.now().strftime("%Y-%m-%d"),
         }
         return render(request, 'twitter_web/register.html', context=template_context)
     else:
@@ -55,17 +57,14 @@ def register(request):
         password = request.POST["password"]
         confirm_password = request.POST["confirm_password"]
 
-        # check if fname is less than 30 characters
         if len(fname) > 30:
             request.session["error_message"] = "First name can only have 30 characters at max."
             return HttpResponseRedirect(reverse('twitter_web:register'))
 
-        # check if lname is less than 30 characters
         if len(lname) > 30:
             request.session["error_message"] = "Last name can only have 30 characters at max."
             return HttpResponseRedirect(reverse('twitter_web:register'))
 
-        # check if username already exits or not
         if len(username) > 30:
             request.session["error_message"] = "Username can only have 30 characters at max."
             return HttpResponseRedirect(reverse('twitter_web:register'))
@@ -81,7 +80,6 @@ def register(request):
             request.session["error_message"] = "Email can only have 50 characters at max."
             return HttpResponseRedirect(reverse('twitter_web:register'))
 
-        # check if email already exits or not
         try:
             validate_email(email)
         except ValidationError:
@@ -96,7 +94,12 @@ def register(request):
             pass
 
         # check if dob is less than 18 years ago from today
-        dob_datetime = datetime.strptime(dob, '%Y-%m-%d').timestamp()
+        try:
+            dob_datetime = datetime.strptime(dob, '%Y-%m-%d').timestamp()
+        except ValueError:
+            request.session["error_message"] = "Incorrect format for date of birth."
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
         if dob_datetime > (timezone.now() - dt.timedelta(days=1)).timestamp():
             # user is not of appropriate age
             request.session["error_message"] = "You're not old enough to join Twitter."
@@ -127,15 +130,19 @@ def register(request):
             request.session["error_message"] = "Password must have at least one number."
             return HttpResponseRedirect(reverse('twitter_web:register'))
 
-        new_user = User(fname=fname,
-                        lname=lname,
-                        username=username.lower(),
-                        email=email,
-                        password=make_password(password),
-                        country=country,
-                        dob=dob)
+        try:
+            new_user = User(fname=fname,
+                            lname=lname,
+                            username=username.lower(),
+                            email=email,
+                            password=make_password(password),
+                            country=country,
+                            dob=dob)
+            new_user.save()
+        except Error:
+            request.session["error_message"] = "Error occurred while making new user."
+            return HttpResponseRedirect(reverse('twitter_web:register'))
 
-        new_user.save()
         request.session["error_message"] = "Registered successfully."
         request.session["error_message_color"] = "green"
         return HttpResponseRedirect(reverse('twitter_web:login'))
@@ -192,6 +199,7 @@ def logout(request):
         if request.session.get("username"):
             request.session.pop("username")
             return HttpResponseRedirect(reverse('twitter_web:search'))
+        request.session["error_message"] = "Your haven't logged in!"
         return HttpResponseRedirect(reverse('twitter_web:login'))
 
 
@@ -475,6 +483,7 @@ def retweet(request):
                 existing_retweet.delete()
                 response["response"] = "successful"
                 response["message"] = "Un-retweet successfully"
+                response["count"] = post.retweets.count()
             else:
                 post.retweets.add(session_user)
                 Retweet.objects.create(
@@ -483,6 +492,7 @@ def retweet(request):
                 )
                 response["response"] = "successful"
                 response["message"] = "Retweeted successfully"
+                response["count"] = post.retweets.count()
             post.save()
         else:
             response["response"] = "login"
@@ -513,6 +523,7 @@ def like(request):
                 post.likes.remove(session_user)
                 response["response"] = "successful"
                 response["message"] = "Tweet unliked successfully"
+                response["count"] = post.likes.count()
             else:
                 Like.objects.create(
                     user_id=session_user,
@@ -521,6 +532,7 @@ def like(request):
                 post.likes.add(session_user)
                 response["response"] = "successful"
                 response["message"] = "Liked successfully"
+                response["count"] = post.likes.count()
             post.save()
         else:
             response["response"] = "login"

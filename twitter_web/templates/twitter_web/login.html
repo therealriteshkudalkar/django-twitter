@@ -11,9 +11,9 @@
             <h2 class="main-content__title">Login</h2>
         </div>
         {% if error_message %}
-            <div>
-                <p class="main-content__error-message">{{ error_message }}</p>
-            </div>
+        <div class="main-content__error">
+            <p class="main-content__error-message {% if error_message_color == 'green' %} .main-content__success-message {% endif %}">{{ error_message }}</p>
+        </div>
         {% endif %}
         <article class="main-content__form-section">
             <form class="main-content__form" action="/login" method="POST" enctype="multipart/form-data">
