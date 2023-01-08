@@ -1,0 +1,44 @@
+{% load static %}
+
+<div class="modal-backdrop"></div>
+
+<div class="modal-tweet">
+    <button class="modal-tweet__cancel" onclick="dismissTweetModal()">X</button>
+    <div class="modal-tweet__content">
+      <div>
+        {% if user.session_user.profile_image_user.all %}
+        {% for profile_image in user.session_user.profile_image_user.all|slice:":1" %}
+        <img class="modal-tweet__profile-image" src="{{ profile_image.image.url }}" alt="profile_image">
+        {% endfor %}
+        {% else %}
+        <img class="modal-tweet__profile-image" src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}" alt="profile_image">
+        {% endif %}
+      </div>
+      <form class="modal-tweet__form" action="{% url 'twitter_web:post_tweet' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- <input type="hidden" name="is_comment" value="False">
+        <input type="hidden" name="is_quote_tweet" value="False">
+        <input type="hidden" name="is_commercial" value="False"> -->
+        <div class="modal-tweet__form-text">
+          <textarea class="modal-tweet__text-area" name="tweet_text" rows="5" placeholder="What's happening?"></textarea>
+          <select class="modal-tweet__select-privacy" name="tweet_privacy">
+            <option name="everyone">Everyone</option>
+            <option name="people_you_follow">People you follow</option>
+            <option name="only_people_you_mention">Only people you mention</option>
+          </select>
+        </div>
+        <hr>
+        <div class="modal-tweet__form-images">
+          <div>
+            <label for="tweet_images">
+              <img class="modal-tweet__form-image-button" src="{% static 'twitter_web/assets/icons/icons8-add-image-96.png' %}">
+            </label>
+            <input id="tweet_images" type="file" name="images" multiple>
+          </div>
+          <div>
+            <input class="modal-tweet__form-tweet-button" type="submit" value="Tweet">
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>

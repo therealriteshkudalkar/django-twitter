@@ -54,8 +54,8 @@ class Tweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tweet_user_id')
     text = models.CharField(max_length=256, blank=True)
-    likes = models.ManyToManyField(User, default=None, null=True, blank=True, related_name='liked_by_users')
-    retweets = models.ManyToManyField(User, default=None, null=True, blank=True, related_name='retweeted_by_users')
+    likes = models.ManyToManyField(User, default=None, blank=True, related_name='liked_by_users')
+    retweets = models.ManyToManyField(User, default=None, blank=True, related_name='retweeted_by_users')
     is_comment = models.BooleanField(default=False)
     is_quote_tweet = models.BooleanField(default=False)
     is_commercial = models.BooleanField(default=False)
@@ -93,7 +93,7 @@ class Retweet(models.Model):
 class TweetImage(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     tweet_id = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='tweet_image_user_id')
-    created_on = models.DateTimeField(default=now, editable=False)
+    created_at = models.DateTimeField(default=now, editable=False)
     image = CloudinaryField('tweet_image')
 
 
@@ -101,12 +101,14 @@ class QuoteTweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     quoted_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='quoted_tweet')
     actual_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='quote_tweet')
+    created_at = models.DateTimeField(default=now, editable=False)
 
 
 class CommentTweet(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     parent_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='parent_tweet')
     comment_tweet = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='comment_tweet')
+    created_at = models.DateTimeField(default=now, editable=False)
 
 
 class Like(models.Model):
@@ -132,6 +134,7 @@ class Notification(models.Model):
     user_to_notify = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_to_notify')
     post = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='action_on_post')
     action = models.CharField(max_length=20, choices=Action.choices, default=Action.LIKE)
+    created_at = models.DateTimeField(default=now, editable=False)
 
 
 class Message(models.Model):
@@ -153,6 +156,7 @@ class Campaign(models.Model):
     advertiser_id = models.ForeignKey(Advertiser, on_delete=models.CASCADE, related_name='campaign_advertiser_id')
     tweet_id = models.ForeignKey(Tweet, on_delete=models.CASCADE, related_name='campaign_tweet_id')
     cost = models.IntegerField()
+    created_at = models.DateTimeField(default=now, editable=False)
 
 
 class AffiliatedEntity(models.Model):

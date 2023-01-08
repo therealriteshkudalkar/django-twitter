@@ -96,7 +96,34 @@
           </form>
         </div>
         <div class="single-tweet__action">
-          <span><img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-uninstalling-updates-96.png' %}"></span>
+          <span class="single-tweet__action-spl-span">
+            <div class="single-tweet__more-options">
+              <div>
+                <form method="POST" action="{% url 'twitter_web:bookmark' %)">
+                  {% csrf_token %}
+                  <input type="hidden" name="tweet_id" value="{{ tweet.id }}">
+                  {% if already_bookmarked %}
+                  {% else %} 
+                  {% endif %}
+                  <img src="">
+                  <span>Bookmark</span>
+                </form>
+                <form method="POST" action="{% url 'twitter_web:delete_tweet' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="tweet_id" value="{{ tweet.id }}">
+                  <img src="">
+                  <span>Delete Tweet</span>
+                </form>
+                <div>
+                  <img src="">
+                  <span>Copy Link</span>
+                </div>
+                <button class="single-tweet__more-option-cancel">X</button>
+              </div>
+              <div class="single-tweet__more-options-pointer"></div>
+            </div>
+            <img class="single-tweet__action-image" src="{% static 'twitter_web/assets/icons/icons8-uninstalling-updates-96.png' %}">
+          </span>
         </div>
       </div>
     </div>

@@ -9,6 +9,9 @@
 </head>
 
 <body>
+
+  {% include 'twitter_web/include/tweet-modal.html' %}
+
   <div class="container">
     {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
 
@@ -39,7 +42,7 @@
             <input type="hidden" name="is_quote_tweet" value="False">
             <input type="hidden" name="is_commercial" value="False"> -->
             <div class="modal-tweet__form-text">
-              <textarea class="modal-tweet__text-area" name="tweet_text" rows="5" placeholder="What's happening?"></textarea>
+              <textarea class="modal-tweet__text-area" name="tweet_text" rows="2" placeholder="What's happening?"></textarea>
               <select class="modal-tweet__select-privacy" name="tweet_privacy">
                 <option name="everyone">Everyone</option>
                 <option name="people_you_follow">People you follow</option>
@@ -75,6 +78,7 @@
     {% include 'twitter_web/include/search-bar.html' %}
   </div>
 
+  <script src="{% static 'twitter_web/js/profile.js' %}"></script>
   <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
 
   {% include 'twitter_web/include/footer.html' %}

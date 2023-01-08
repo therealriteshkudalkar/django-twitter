@@ -18,13 +18,13 @@ body {
     width: 100vw;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 1fr 7fr;
+    grid-template-columns: 5rem 7fr;
     grid-template-areas: "nav main";
 }
 
 .main-section {
     overflow-y: scroll;
-    height: 100vh;
+    /* height: 100vh; */
     position: relative;
 }
 
@@ -70,7 +70,6 @@ body {
 }
 
 .main-section__includer {
-    overflow-y: scroll;
     margin-top: 4.125rem;
 }
 

@@ -12,7 +12,8 @@ from django.db import transaction
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
-from .models import User, Follow, Tweet, Retweet, Bio, ProfileImage, HeaderImage, TweetImage, Message, Like, Impression, QuoteTweet, CommentTweet
+from .models import User, Bio, ProfileImage, HeaderImage, Follow, Tweet, TweetImage, QuoteTweet, CommentTweet, Retweet,\
+    Like, Impression, Message, Notification, Advertiser, Campaign
 from .helper import int_to_string
 
 
@@ -183,7 +184,11 @@ def profile(request, username):
         tweets = Tweet.objects.filter(user_id=user.id).order_by('-created_at')
         retweets = Retweet.objects.filter(user_id=user.id).order_by("-created_at")
 
-        result_list = list(chain(tweets, retweets))
+        result_list = sorted(
+            list(chain(tweets, retweets)),
+            key=lambda instance: instance.created_at,
+            reverse=True,
+        )
 
         followers = Follow.objects.filter(followee_id=user.id)
         followings = Follow.objects.filter(follower_id=user.id)
@@ -253,7 +258,7 @@ def profile(request, username):
             # user is not authenticated
             template_context["user"]["is_same_user"] = False
             template_context["user"]["is_follower"] = False
-            template_context["user"]["show_profile"] = user.is_account_private
+            template_context["user"]["show_profile"] = not user.is_account_private
 
         return render(request, 'twitter_web/profile.html', context=template_context)
 
@@ -582,7 +587,7 @@ def follow(request):
                 response["response"] = "error"
                 response["message"] = "User not found"
         else:
-            # user has to login first
+            # user has to log in first
             response["response"] = "login"
             response["message"] = 'Please login first'
         return JsonResponse(data=response, safe=False)
@@ -602,7 +607,11 @@ def timeline(request, username):
                 followings = Follow.objects.filter(follower_id=session_user).values_list('followee_id')
                 tweets_of_followings = Tweet.objects.filter(user_id__in=followings).order_by('-created_at')
                 retweets_of_followings = Retweet.objects.filter(user_id__in=followings).order_by('-created_at')
-                result_list = list(chain(tweets_of_followings, retweets_of_followings))
+                result_list = sorted(
+                    list(chain(tweets_of_followings, retweets_of_followings)),
+                    key=lambda instance: instance.created_at,
+                    reverse=True,
+                )
                 template_context = {
                     'user': {
                         'session_user': session_user,

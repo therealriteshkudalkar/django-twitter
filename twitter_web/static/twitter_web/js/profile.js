@@ -35,10 +35,10 @@ function onFollowButtonClick() {
             }
         } else if (data["response"] === "login") {
             // show modal asking user to login
-            let modal = document.getElementById("");
+            showLoginModal();
         } else {
             // show a modal showing error occurred
-            let modal = document.getElementById("");
+            showErrorModal(data["response_message"]);
         }
     });
 }
@@ -61,20 +61,40 @@ function dismissTweetModal() {
     tweetModal.classList.remove("show");
 }
 
-function showErrorModal() {
+function showErrorModal(message) {
     const backdrop = document.getElementsByClassName("modal-backdrop")[0];
     backdrop.classList.add("show");
     backdrop.classList.remove("hide");
-    const errorModal = document.getElementsByClassName("modal-tweet")[0];
+    const errorModal = document.getElementsByClassName("modal-error")[0];
     errorModal.classList.add("show");
     errorModal.classList.remove("hide");
+    const messageTag = errorModal.getElementsByClassName("modal-error__message")[0];
+    messageTag.innerHTML = message;
 }
 
 function dismissErrorModal() {
     const backdrop = document.getElementsByClassName("modal-backdrop")[0];
     backdrop.classList.add("hide");
     backdrop.classList.remove("show");
-    const errorModal = document.getElementsByClassName("modal-tweet")[0];
+    const errorModal = document.getElementsByClassName("modal-error")[0];
     errorModal.classList.add("hide");
     errorModal.classList.remove("show");
+}
+
+function showLoginModal() {
+    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+    backdrop.classList.add("show");
+    backdrop.classList.remove("hide");
+    const tweetModal = document.getElementsByClassName("modal-login")[0];
+    tweetModal.classList.add("show");
+    tweetModal.classList.remove("hide");
+}
+
+function dismissLoginModal() {
+    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
+    backdrop.classList.add("hide");
+    backdrop.classList.remove("show");
+    const tweetModal = document.getElementsByClassName("modal-login")[0];
+    tweetModal.classList.add("hide");
+    tweetModal.classList.remove("show");
 }

@@ -37,10 +37,10 @@ function onRetweetButtonClick(context, tweet_id) {
             }
         } else if (data["response"] === "login") {
             // show modal asking user to login
-            let modal = document.getElementById("");
+            showLoginModal();
         } else {
             // show a modal showing error occurred
-            let modal = document.getElementById("");
+            showErrorModal(data["response_message"]);
         }
     });
 }
@@ -84,23 +84,10 @@ function onLikeButtonClick(context, tweet_id) {
             }
         } else if (data["response"] === "login") {
             // show modal asking user to login
-            let modal = document.getElementById("");
+            showLoginModal();
         } else {
             // show a modal showing error occurred
-            let modal = document.getElementById("");
+            showErrorModal(data["response_message"]);
         }
     });
-}
-
-function showLoginModal() {
-    const backdrop = document.getElementsByClassName("modal-backdrop")[0];
-    backdrop.classList.add("show");
-    backdrop.classList.remove("hide");
-    const tweetModal = document.getElementsByClassName("modal-tweet")[0];
-    tweetModal.classList.add("show");
-    tweetModal.classList.remove("hide");
-}
-
-function dismissLoginModal() {
-    // dismiss
 }
