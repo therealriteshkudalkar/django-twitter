@@ -66,12 +66,20 @@ def register(request):
             return HttpResponseRedirect(reverse('twitter_web:register'))
 
         # check if username already exits or not
+        if len(username) > 30:
+            request.session["error_message"] = "Username can only have 30 characters at max."
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
         try:
             User.objects.get(username=username)
             request.session["error_message"] = "User with given username already exists."
             return HttpResponseRedirect(reverse('twitter_web:register'))
         except User.DoesNotExist:
             pass
+
+        if len(email) > 30:
+            request.session["error_message"] = "Email can only have 50 characters at max."
+            return HttpResponseRedirect(reverse('twitter_web:register'))
 
         # check if email already exits or not
         try:
@@ -97,6 +105,26 @@ def register(request):
         # check if password and confirm_password are matching
         if password != confirm_password:
             request.session["error_message"] = "Passwords don't match"
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
+        if len(password) < 7:
+            request.session["error_message"] = "Password must have at least 7 characters."
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
+        special_character = set("%$@#!&^*-")
+
+        if not special_character.intersection(password):
+            request.session["error_message"] = "Password must have at least one special character; # % ^ @ ! * - &"
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
+        if password == password.lower():
+            request.session["error_message"] = "Password must have at least one upper case character."
+            return HttpResponseRedirect(reverse('twitter_web:register'))
+
+        numbers = set('0123456789')
+
+        if not numbers.intersection(password):
+            request.session["error_message"] = "Password must have at least one number."
             return HttpResponseRedirect(reverse('twitter_web:register'))
 
         new_user = User(fname=fname,
