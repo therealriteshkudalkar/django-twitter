@@ -12,6 +12,8 @@
 
   {% include 'twitter_web/include/tweet-modal.html' %}
 
+  {% include 'twitter_web/include/error-modal.html' %}
+
   <div class="container">
     {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user page='timeline' %}
 
@@ -19,7 +21,6 @@
       <header class="header-section">
         <div>
           <h3>Home</h3>
-          <!-- <span><img src=""></span> -->
         </div>
       </header>
       <section class="make-tweet-section">

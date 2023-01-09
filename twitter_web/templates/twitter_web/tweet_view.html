@@ -1,0 +1,90 @@
+{% include 'twitter_web/include/head.html' with title=user.name %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+</head>
+
+<body>
+
+	{% include 'twitter_web/include/tweet-modal.html' %}
+
+	<div class="modal-error">
+		<h3 class="modal-error__head">Error</h3>
+		<p class="modal-error__message"></p>
+		<button class="modal-error__cancel" onclick="dismissErrorModal()">X</button>
+	</div>
+
+	<div class="container">
+
+		{% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='timeline' %}
+
+		<main class="main-section">
+			<header class="header-section">
+				<div>
+					<h3>{{ post.user_id.fname }}</h3>
+				</div>
+			</header>
+
+
+			<section class="main-section__tweets">
+				{% include 'twitter_web/include/tweet.html' with session_user=session_user tweet=post %}
+			</section>
+
+			<section class="main-section__make-tweet">
+				<div class="modal-tweet__content">
+					<div>
+						{% if user.session_user.profile_image_user.all %}
+						{% for profile_image in user.session_user.profile_image_user.all|slice:":1" %}
+						<img class="modal-tweet__profile-image" src="{{ profile_image.image.url }}" alt="profile_image">
+						{% endfor %}
+						{% else %}
+						<img class="modal-tweet__profile-image" src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}" alt="profile_image">
+						{% endif %}
+					</div>
+					<form class="modal-tweet__form" action="{% url 'twitter_web:post_tweet' %}" method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+						<input type="hidden" name="is_comment" value="True">
+						<input type="hidden" name="parent_tweet_id" value="{{ post.id }}">
+						<!-- <input type="hidden" name="is_quote_tweet" value="False">
+						<input type="hidden" name="is_commercial" value="False"> -->
+						<div class="modal-tweet__form-text">
+							<textarea class="modal-tweet__text-area" name="tweet_text" rows="5" placeholder="What's happening?"></textarea>
+							<select class="modal-tweet__select-privacy" name="tweet_privacy">
+								<option name="everyone">Everyone</option>
+								<option name="people_you_follow">People you follow</option>
+								<option name="only_people_you_mention">Only people you mention</option>
+							</select>
+						</div>
+						<hr>
+						<div class="modal-tweet__form-images">
+							<div>
+								<label for="tweet_images">
+									<img class="modal-tweet__form-image-button" src="{% static 'twitter_web/assets/icons/icons8-add-image-96.png' %}">
+								</label>
+								<input id="tweet_images" type="file" name="images" multiple>
+							</div>
+							<div>
+								<input class="modal-tweet__form-tweet-button" type="submit" value="Tweet">
+							</div>
+						</div>
+					</form>
+				</div>
+			</section>
+
+			<section class="main-section__comments">
+				{% for comment in comments %}
+				{% include 'twitter_web/include/tweet.html' with session_user=session_user tweet=comment.comment_tweet %}
+				{% endfor %}
+			</section>
+		</main>
+		{% include 'twitter_web/include/search-bar.html' %}
+
+	</div>
+
+	<script src="{% static 'twitter_web/js/profile.js' %}"></script>
+	<script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+
+	{% include 'twitter_web/include/footer.html' %}

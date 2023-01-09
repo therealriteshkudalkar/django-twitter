@@ -36,6 +36,7 @@ body {
     position: fixed;
     background: rgba(255, 255, 255, 0.75);
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     width: 100%;
     top: 0;
     z-index: 1;
@@ -207,9 +208,16 @@ body {
     column-gap: 0.5rem;
 }
 
+.follow__following-link,
+.follow__followers-link {
+    color: #7f7f7f;
+    text-decoration: none;
+}
+
 .follow__following-number,
 .follow__followers-number {
     font-weight: bold;
+    color: #000;
 }
 
 .follow__following-text,
@@ -222,14 +230,19 @@ body {
     justify-content: space-around;
     border-bottom: 1px solid #eeeeee;
     position: sticky;
-    top: 4.15rem;
+    top: 3.75rem;
     background-color: #fff;
 }
 
 .main-section__tab-link {
     padding: 0.75rem;
+    cursor: pointer;
 }
 
 .main-section__tab-link--selected {
     border-bottom: 2px solid #00acee;
+}
+
+.main-section__liked-tweets {
+    display: none;
 }

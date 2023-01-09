@@ -21,7 +21,7 @@
     padding: 2rem;
     background: white;
     border-radius: 1rem;
-    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
     text-align: center;
 }
 
@@ -68,6 +68,7 @@
     left: 82.5%;
     z-index: 30;
     box-shadow: 2px 2px 2px rgba(128, 128, 128, 0.5);
+    cursor: pointer;
 }
 
 
@@ -164,6 +165,10 @@ hr {
     background-color: #00acee;
     color: white;
     font-weight: bold;
+}
+
+.modal-error {
+    padding: 1rem;
 }
 
 .hide {

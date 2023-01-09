@@ -23,11 +23,7 @@
   </div>
   {% endif %}
 
-  <div class="modal-error">
-    <h3 class="modal-erro__head">Error</h3>
-    <p class="modal-error__message"></p>
-    <button class="modal-error__cancel" onclick="dismissErrorModal()">X</button>
-  </div>
+  {% include 'twitter_web/include/error-modal.html' %}
 
   <div class="container">
 
@@ -43,14 +39,14 @@
           </a>
         </div>
         <div class="main-section__user-head">
-          <h2 class="main-section__user-heading">
+          <h3 class="main-section__user-heading">
             <span>{{ user.fname }}</span>
             <span>{{ user.lname }}</span>
             {% if user.is_verified %}
             <span><img class="main-section__user-verified-tag"
                 src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
             {% endif %}
-          </h2>
+          </h3>
           <p class="main-section__user-tweet-count">
             {{ user.tweet_count }} Tweet{{ user.tweet_count|pluralize:" ,s"}}
           </p>
@@ -139,20 +135,24 @@
           </div>
           <div class="follow">
             <div class="follow__following">
-              <span class="follow__following-number">{{ user.following_count }}</span>
-              <span class="follow__following-text">Following</span>
+              <a class="follow__following-link" href="{% url 'twitter_web:follow_list' selected='following' username=user.username %}">
+                <span class="follow__following-number">{{ user.following_count }}</span>
+                <span class="follow__following-text">Following</span>
+              </a>
             </div>
             <div class="follow__followers">
-              <span class="follow__followers-number">{{ user.follower_count }}</span>
-              <span class="follow__followers-text">Followers</span>
+              <a class="follow__following-link" href="{% url 'twitter_web:follow_list' selected='followers' username=user.username %}">
+                <span class="follow__followers-number">{{ user.follower_count }}</span>
+                <span class="follow__followers-text">Followers</span>
+              </a>
             </div>
           </div>
         </section>
 
         {% if user.show_profile %}
         <div class="main-section__tab-links">
-          <div class="main-section__tab-link main-section__tab-link--selected">Tweets</div>
-          <div class="main-section__tab-link">Likes</div>
+          <div class="main-section__tab-link main-section__tab-link--selected" onclick="selectTab('tweets')">Tweets</div>
+          <div class="main-section__tab-link" onclick="selectTab('likes')">Likes</div>
         </div>
         <div class="main-section__tabs">
           <section class="main-section__tweets">
@@ -166,11 +166,7 @@
           </section>
           <section class="main-section__liked-tweets">
             {% for tweet_ in user.liked_tweets %}
-            {% if tweet_.get_type == 'retweet' %}
-            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
-            {% else %}
-            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
-            {% endif %}
+            {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id %}
             {% endfor %}
           </section>
         </div>
@@ -188,7 +184,7 @@
 
     {% include 'twitter_web/include/search-bar.html' %}
 
-  <div>
+  </div>
 
   <script src="{% static 'twitter_web/js/profile.js' %}"></script>
   <script src="{% static 'twitter_web/js/tweet.js' %}"></script>

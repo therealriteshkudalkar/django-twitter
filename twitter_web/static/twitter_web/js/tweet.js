@@ -42,7 +42,7 @@ function onRetweetButtonClick(context, tweet_id) {
             showLoginModal();
         } else {
             // show a modal showing error occurred
-            showErrorModal(data["response_message"]);
+            showErrorModal(data["response_message"], "Error");
         }
     });
 }
@@ -63,8 +63,6 @@ function onLikeButtonClick(context, tweet_id) {
     data.append('tweet_id', tweet_id);
     data.append('like_value', like_value.value);
     data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
-
-    // console.log(url, like_value, csrfmiddlewaretoken);
 
     fetch(url, {
         method: "POST",
@@ -91,17 +89,75 @@ function onLikeButtonClick(context, tweet_id) {
             showLoginModal();
         } else {
             // show a modal showing error occurred
-            showErrorModal(data["response_message"]);
+            showErrorModal(data["response_message"], "Error");
         }
     });
 }
 
-function onDeleteTweetButtonClick() {
-    //
+function onBookmarkTweetButtonClick(context, tweet_id) {
+    const form = context.parentElement;
+    const addBookmarkImageUrl = form.querySelector("input[name='add_bookmark_url']").value;
+    const removeBookmarkImageUrl = form.querySelector("input[name='remove_bookmark_url']").value;
+    const image = form.querySelector(".single-tweet__more-options-image");
+    const text = form.querySelector("span");
+
+    console.log(image);
+    
+    const url = form.action;
+    const csrfmiddlewaretoken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
+    const bookmarkValue = form.querySelector("input[name='bookmarked']");
+
+    let data = new FormData();
+    data.append('tweet_id', tweet_id);
+    data.append('csrfmiddlewaretoken', csrfmiddlewaretoken);
+
+    console.log(url);
+
+    fetch(url, {
+        method: "POST",
+        body: data,
+        credentials: 'same-origin',
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        //perform operation with data
+        if (data["response"] === "successful") {
+            if (bookmarkValue.value == 'true') {
+                bookmarkValue.value = 'false';
+                image.src = addBookmarkImageUrl;
+                text.innerHTML = "Add Bookmark";
+            } else {
+                bookmarkValue.value = 'true';
+                image.src = removeBookmarkImageUrl;
+                text.innerHTML = "Remove Bookmark";
+            }
+            // check if follow was performed
+            // change the image source
+        } else if (data["response"] === "login") {
+            // show modal asking user to login
+            showLoginModal();
+        } else {
+            // show a modal showing error occurred
+            showErrorModal(data["response_message"], "Error");
+        }
+    });
+
+
 }
 
-function onBookmarkTweetButtonClick() {
-    //
+function onDeleteTweetButtonClick(context, tweet_id) {
+    const form = context.parentElement;
+
+    form.submit();
+}
+
+
+
+function onCopyTweetLinkButtonClick(context, tweet_id) {
+    navigator.clipboard.writeText(window.location.origin + "/tweet/" + tweet_id);
+    dismissMoreTweetOptionModal(context, tweet_id);
+    showErrorModal("The tweet link has been copied to your clipboard successfully!", "Copied")
 }
 
 function showMoreTweetOptionModal(context, tweet_id) {

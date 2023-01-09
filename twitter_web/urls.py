@@ -15,13 +15,12 @@ urlpatterns = [
     path('profile/<username>', views.profile, name='profile'),
     path('edit-profile', views.edit_profile, name='edit_profile'),
     path('timeline/<username>', views.timeline, name='timeline'),
-    path('tweet/<tweet_id>', views.tweet, name='tweet'),
+    path('tweet/<tweet_id>', views.show_tweet, name='tweet'),
     path('post_tweet', views.post_tweet, name='post_tweet'),
     path('delete_tweet', views.delete_tweet, name='delete_tweet'),
 
     path('follow', views.follow, name='follow'),
-    path('follower/<username>', views.follower_list, name='follower_list'),
-    path('following/<username>', views.following_list, name='following_list'),
+    path('follow/<selected>/<username>', views.follow_list, name='follow_list'),
 
     path('retweet', views.retweet, name='retweet'),
     path('like', views.like, name='like'),

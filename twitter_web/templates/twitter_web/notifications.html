@@ -1,10 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+{% include 'twitter_web/include/head.html' with title=user.name %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
 </head>
-<body>
 
-</body>
-</html>
+<body>
+  
+  {% include 'twitter_web/include/tweet-modal.html' %}
+
+  <div class="modal-error">
+    <h3 class="modal-erro__head">Error</h3>
+    <p class="modal-error__message"></p>
+    <button class="modal-error__cancel" onclick="dismissErrorModal()">X</button>
+  </div>
+
+  <div class="container">
+
+    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user page='bookmarks' %}
+
+    <main class="main-section">
+        <header class="header-section">
+            <div>
+              <h3>Notifications</h3>
+            </div>
+          </header>
+
+
+          <section class="main-section__tweets">
+            {% if user.notifications %}
+            {% for notification in user.notifications %}
+            {% include 'twitter_web/include/notification.html' with session_user=user.session_user tweet=bookmark.post_id is_retweeted=False retweeted_by='' %}
+            {% endfor %}
+            {% else %}
+            <article>
+                <h3>Wow so empty ...</h3>
+                <p>Try bookmarking your first tweet!</p>
+            </article>
+            {% endif %}
+        </section>
+    
+    </main>
+    
+    {% include 'twitter_web/include/search-bar.html' %}
+
+  <div>
+
+  <script src="{% static 'twitter_web/js/profile.js' %}"></script>
+  <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+
+{% include 'twitter_web/include/footer.html' %}

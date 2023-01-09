@@ -1,6 +1,5 @@
 import datetime as dt
 
-import django.db
 from cloudinary import uploader
 from datetime import datetime
 from itertools import chain
@@ -14,7 +13,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
 from .models import User, Bio, ProfileImage, HeaderImage, Follow, Tweet, TweetImage, QuoteTweet, CommentTweet, Retweet, \
-    Like, Impression, Message, Notification, Advertiser, Campaign
+    Like, Impression, Bookmark, Message, Notification, Advertiser, Campaign
 from .helper import int_to_string
 
 
@@ -153,7 +152,8 @@ def login(request):
         # if user is already logged in then redirect to timeline
         session_username = request.session.get('username')
         if session_username:
-            return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={'username': session_username}))
+            return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={
+                'username': session_username}))
 
         error_message = request.session.get('error_message')
         error_message_color = request.session.get('error_message_color')
@@ -226,6 +226,8 @@ def profile(request, username):
             reverse=True,
         )
 
+        liked_tweets = Like.objects.filter(user_id=user).order_by('-created_at')
+
         followers = Follow.objects.filter(followee_id=user.id)
         followings = Follow.objects.filter(follower_id=user.id)
         bio = Bio.objects.filter(user_id=user.id).order_by('-created_at')
@@ -265,6 +267,7 @@ def profile(request, username):
                 'profile_image_url': profile_image_url,
                 'header_image_url': header_image_url,
                 'tweets': result_list,
+                'liked_tweets': liked_tweets,
             }
         }
 
@@ -395,9 +398,9 @@ def post_tweet(request):
         else:
             return HttpResponseRedirect(reverse('twitter_web:search'))
 
-        is_comment = request.POST.get("is_comment", False)
-        is_quote_tweet = request.POST.get("is_quote_tweet", False)
-        is_commercial = request.POST.get("is_commercial", False)
+        is_comment = request.POST.get("is_comment", "False")
+        is_quote_tweet = request.POST.get("is_quote_tweet", "False")
+        is_commercial = request.POST.get("is_commercial", "False")
         tweet_text = request.POST.get("tweet_text", '')
 
         with transaction.atomic():
@@ -409,11 +412,11 @@ def post_tweet(request):
                 is_commercial=is_commercial,
             )
 
-            if is_comment:
+            if is_comment == "True":
                 parent_tweet_id = request.POST.get("parent_tweet_id")
                 parent_tweet = Tweet.objects.filter(id=parent_tweet_id)
                 if parent_tweet.exists():
-                    CommentTweet.object.create(
+                    CommentTweet.objects.create(
                         parent_tweet=parent_tweet.first(),
                         comment_tweet=new_tweet,
                     )
@@ -443,19 +446,6 @@ def post_tweet(request):
                     counter += 1
 
             return HttpResponseRedirect(reverse('twitter_web:profile', kwargs={'username': session_username}))
-
-
-def delete_tweet(request):
-    if request.method == "POST":
-        session_username = request.session.get("username")
-        session_user_filtered = User.objects.filter(username=session_username)
-        if session_user_filtered.exists():
-            pass
-
-
-def tweet(request, tweet_id):
-    if request.method == "GET":
-        pass
 
 
 def retweet(request):
@@ -570,77 +560,94 @@ def impression(request):
         return JsonResponse(data=response, safe=False)
 
 
-def search(request):
-    if request.method == "GET":
-        # check if there is any user error
-        # if yes, then show that error on search page
-        # else show the trending page
-        error_message = request.session.get("search_error_message")
-        if error_message:
-            template_context = {
-                'error_message': error_message,
-            }
-        else:
-            template_context = {}
-        return render(request, 'twitter_web/search.html', context=template_context)
-    else:
-        # perform the search query
-        query = request.POST.get("search")
-        # you can use like command from postgresql
-        # search for people
-        # search for trending topics
-        # search for trending topics in news
-        # if user has logged in then search for trending topics tailored to him
-        template_context = {}
-        return render(request, 'twitter_web/search.html', context=template_context)
-
-
 def follow(request):
     if request.method == "POST":
-        session_username = request.session.get("username", " ")
-        username_being_followed = request.POST.get("followee", " ")
-        session_user = User.objects.filter(username=session_username)
-        user_being_followed = User.objects.filter(username=username_being_followed)
+        with transaction.atomic():
+            session_username = request.session.get("username", " ")
+            username_being_followed = request.POST.get("followee", " ")
+            filtered_session_user = User.objects.filter(username=session_username)
 
-        response = {}
+            user_being_followed_filtered = User.objects.filter(username=username_being_followed)
 
-        if session_user.exists():
-            if user_being_followed.exists():
+            response = {}
 
-                has_a_follow = Follow.objects.filter(
-                    follower_id=session_user.first().id,
-                    followee_id=user_being_followed.first().id,
-                )
+            if filtered_session_user.exists():
+                session_user = filtered_session_user.first()
+                if user_being_followed_filtered.exists():
+                    user_being_followed = user_being_followed_filtered.first()
 
-                if has_a_follow.exists():
-                    has_a_follow.delete()
-                    response["response"] = "successful"
-                    response["message"] = "Unfollowed successfully"
-                else:
-                    Follow.objects.create(
-                        follower_id=session_user.first(),
-                        followee_id=user_being_followed.first()
+                    has_a_follow = Follow.objects.filter(
+                        follower_id=session_user,
+                        followee_id=user_being_followed,
                     )
-                    response["response"] = "successful"
-                    response["message"] = "Followed successfully"
+
+                    if has_a_follow.exists():
+                        session_user.followings.remove(user_being_followed)
+                        user_being_followed.followers.remove(session_user)
+                        has_a_follow.delete()
+                        response["response"] = "successful"
+                        response["message"] = "Unfollowed successfully"
+                    else:
+                        session_user.followings.add(user_being_followed)
+                        user_being_followed.followers.add(session_user)
+                        Follow.objects.create(
+                            follower_id=session_user,
+                            followee_id=user_being_followed,
+                        )
+                        response["response"] = "successful"
+                        response["message"] = "Followed successfully"
+                    session_user.save()
+                    user_being_followed.save()
+                else:
+                    response["response"] = "error"
+                    response["message"] = "User not found"
             else:
-                response["response"] = "error"
-                response["message"] = "User not found"
-        else:
-            # user has to log in first
-            response["response"] = "login"
-            response["message"] = 'Please login first'
-        return JsonResponse(data=response, safe=False)
+                # user has to log in first
+                response["response"] = "login"
+                response["message"] = 'Please login first'
+            return JsonResponse(data=response, safe=False)
+
+
+def follow_list(request, selected, username):
+    if request.method == "GET":
+        session_username = request.session.get("username", " ")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        filtered_user = User.objects.filter(username=username)
+        if not filtered_user.exists():
+            request.session["error_message"] = "User does not exist"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+
+        user = filtered_user.first()
+        session_user = None
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+
+        if user.is_account_private:
+            if session_user == user:
+                pass
+            elif session_user not in user.followers.all():
+                request.session["error_message"] = "Private user, can't access their followings"
+                return HttpResponseRedirect(reverse('twitter_web:search'))
+
+        template_context = {
+            'session_user': session_user,
+            'user': {
+                'object': user,
+                'is_logged_in': session_user is not None,
+            },
+            'selected': selected,
+        }
+        return render(request, 'twitter_web/follow-list.html', context=template_context)
 
 
 def timeline(request, username):
     if request.method == "GET":
-        # if user is logged in then show timeline else redirect to search page
         session_username = request.session.get("username", " ")
         session_user_filtered = User.objects.filter(username=session_username)
-        session_user = session_user_filtered.first()
 
         if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
             if username.lower() == session_username.lower():
                 # get all the tweets by users who the session user follows and arrange them by created at
                 # get all followers of user
@@ -667,27 +674,173 @@ def timeline(request, username):
             return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
-def following_list(request, username):
+def bookmark(request):
     if request.method == "GET":
-        pass
+        session_username = request.session.get("username", " ")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            user_bookmarks = Bookmark.objects.filter(user_id=session_user)
+            template_context = {
+                'user': {
+                    'session_user': session_user,
+                    'bookmarks': user_bookmarks,
+                    'is_logged_in': True
+                }
+            }
+            return render(request, 'twitter_web/bookmarks.html', context=template_context)
+        else:
+            request.session["error_message"] = "Page does not exist"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+    else:
+        post_id = request.POST.get("tweet_id")
+        filtered_posts = Tweet.objects.filter(id=post_id)
+        response = {}
+
+        if not filtered_posts.exists():
+            response["response"] = "error"
+            response["response_message"] = "Post does not exist!"
+            return JsonResponse(data=response, safe=False)
+
+        post = filtered_posts.first()
+
+        session_username = request.session.get("username")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            existing_bookmarks = Bookmark.objects.filter(user_id=session_user, post_id=post)
+            if existing_bookmarks.exists():
+                existing_bookmarks.first().delete()
+                session_user.bookmarks.remove(post)
+                response["response"] = "successful"
+                response["message"] = "Tweet removed from bookmarks!"
+            else:
+                session_user.bookmarks.add(post)
+                Bookmark.objects.create(
+                    user_id=session_user,
+                    post_id=post
+                )
+                response["response"] = "successful"
+                response["message"] = "Tweet bookmarked successfully!"
+                response["count"] = post.likes.count()
+            session_user.save()
+        else:
+            response["response"] = "login"
+            response["response_message"] = "You need to login to proceed with the action."
+        return JsonResponse(data=response, safe=False)
 
 
-def follower_list(request, username):
+def delete_tweet(request):
+    if request.method == "POST":
+        tweet_id = request.POST.get("tweet_id")
+        filtered_tweets = Tweet.objects.filter(id=tweet_id)
+
+        if filtered_tweets.exists:
+            tweet = filtered_tweets.first()
+        else:
+            response = {
+                "response": "error",
+                "message": "Tweet not found or may have been deleted!"
+            }
+            return JsonResponse(data=response, safe=False)
+
+        session_username = request.session.get("username")
+        session_user_filtered = User.objects.filter(username=session_username)
+
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            if session_user == tweet.user_id:
+                tweet.delete()
+                response = {
+                    "response": "success",
+                    "message": "Tweet deleted successfully!"
+                }
+            else:
+                response = {
+                    "response": "error",
+                    "message": "You cannot delete someone else's tweet!",
+                }
+        else:
+            response = {
+                "response": "login",
+                "message": "User not logged in!",
+            }
+
+        return JsonResponse(data=response, safe=False)
+
+
+def show_tweet(request, tweet_id):
     if request.method == "GET":
-        pass
+        filtered_tweets = Tweet.objects.filter(id=tweet_id)
+
+        if filtered_tweets.exists:
+            tweet = filtered_tweets.first()
+        else:
+            request.session["response"] = "Error"
+            request.session["message"] = "Tweet not found or may have been deleted!"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+
+        comments = CommentTweet.objects.filter(parent_tweet=tweet)
+
+        session_username = request.session.get("username")
+        filtered_users = User.objects.filter(username=session_username)
+
+        session_user = None
+
+        if filtered_users.exists():
+            session_user = filtered_users.first()
+
+        template_context = {
+            'session_user': session_user,
+            'post': tweet,
+            'comments': comments,
+            'user': {
+                'is_logged_in': session_user is not None
+            }
+        }
+
+        return render(request, 'twitter_web/tweet_view.html', context=template_context)
+
+
+def search(request):
+    if request.method == "GET":
+        # check if there is any user error
+        # if yes, then show that error on search page
+        # else show the trending page
+        error_message = request.session.get("error_message")
+        if error_message:
+            template_context = {
+                'error_message': error_message,
+            }
+        else:
+            template_context = {}
+        return render(request, 'twitter_web/search.html', context=template_context)
+    else:
+        # perform the search query
+        query = request.POST.get("search")
+        # you can use like command from postgresql
+        # search for people
+        # search for trending topics
+        # search for trending topics in news
+        # if user has logged in then search for trending topics tailored to him
+        template_context = {}
+        return render(request, 'twitter_web/search.html', context=template_context)
 
 
 def notification(request):
     if request.method == "GET":
-        pass
+        session_username = request.session.get("username", " ")
+        session_user_filtered = User.objects.filter(username=session_username)
 
-
-def bookmark(request):
-    # if user is logged in then show bookmark page else redirect them to login page
-    if request.method == "GET":
-        pass
-    else:
-        pass
+        if session_user_filtered.exists():
+            session_user = session_user_filtered.first()
+            # fetch notifications for the user with unread first
+            # once loaded make them unread using javascript
+        else:
+            request.session["error_message"] = "Login to access the link"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def message(request):

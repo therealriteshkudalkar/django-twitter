@@ -1,0 +1,50 @@
+{% include 'twitter_web/include/head.html' with title=user.name %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/timeline.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+</head>
+
+<body>
+
+  {% include 'twitter_web/include/tweet-modal.html' %}
+
+  {% include 'twitter_web/include/error-modal.html' %}
+
+  <div class="container">
+    {% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='timeline' %}
+
+    <main class="main-section">
+      <header class="header-section">
+        <div>
+          <h3>Followings</h3>
+          <h3>Followers</h3>
+        </div>
+      </header>
+
+      <div class="main-section__tabs">
+        <section class="main-section__following">
+          {% for person in user.object.followings.all %}
+          {% include 'twitter_web/include/follow-list-item.html' with user=person  %}
+          {% endfor %}
+        </section>
+        <section class="main-section__followers">
+          {% for person in user.object.followers.all %}
+          {% include 'twitter_web/include/follow-list-item.html' with user=person %}
+          {% endfor %}
+        </section>
+      </div>
+
+</main>
+
+{% include 'twitter_web/include/search-bar.html' %}
+
+<div>
+
+<script src="{% static 'twitter_web/js/profile.js' %}"></script>
+<script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+
+{% include 'twitter_web/include/footer.html' %}

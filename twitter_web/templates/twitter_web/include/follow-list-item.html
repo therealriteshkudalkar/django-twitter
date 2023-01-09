@@ -1,0 +1,48 @@
+{% load static %}
+<article>
+    <div>
+        <div>
+            {% if user.profile_image_user.all %}
+            {% for profile_image in user.profile_image_user.all %}
+                {% if forloop.last %}
+                    <img src="{{ profile_image.url }}">
+                {% endif %}
+            {% endfor %}
+            {% else %}
+            <img src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+            {% endif %}
+        </div>
+    </div>
+    <div>
+        <div>
+            <div>
+                <h3>{{ user.fname }} {{ user.lname}}</h3>
+                <span>@{{ user.username }}</span>
+                {% if session_user in user.followers.all %}
+                <span>Follows you</span>
+                {% endif %}
+            </div>
+            <div>
+                <form onsubmit="return false" method="POST" action="{% url 'twitter_web:follow' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                    {% if session_user in user.followers.all  %}
+                    <button>Following</button>
+                    {% elif session_user in user.followings.all %}
+                    <button>Follow Back</button>
+                    {% elif session_user == user %}
+                    {% else %}
+                    <button>Follow</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+        <div>
+            {% for user_bio in user.bio_user.all %}
+                {% if forloop.last %}
+                    <p>{{ user_bio.text }}</p>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</article>
