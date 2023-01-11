@@ -2,7 +2,6 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
-<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search.css' %}">
@@ -59,9 +58,9 @@
 			{% else %}
 			<main class="main-contents">
 				<section class="tab-links">
-					<div class="tab-link__item tab-link__item--selected">Latest Tweets</div>
-					<div class="tab-link__item">Trending</div>
-					<div class="tab-link__item">People</div>
+					<div class="tab-link__item tab-link__item--selected" onclick="onTabSelection('latest-tweets')">Latest Tweets</div>
+					<div class="tab-link__item" onclick="onTabSelection('trending')">Trending</div>
+					<div class="tab-link__item" onclick="onTabSelection('people')">People</div>
 				</section>
 				
 				<section class="tabs">
@@ -71,7 +70,7 @@
 						{% endfor %}
 					</article>
 					<article class="trending">
-						<p>Trends in {{ country }}</p>
+						<p class="trending__title">Trends in {{ country }}</p>
 						{% for trend_ in trends|slice:":10" %}
 							{% include 'twitter_web/include/trend.html' with trend=trend_ %}
 						{% endfor %}
@@ -90,5 +89,8 @@
 		{% include 'twitter_web/include/search-bar.html' %}
 
 	</div>
+
+	<script src="{% static 'twitter_web/js/search.js' %}"></script>
+	<script src="{% static 'twitter_web/js/tweet.js' %}"></script>
 
 {% include 'twitter_web/include/footer.html' %}

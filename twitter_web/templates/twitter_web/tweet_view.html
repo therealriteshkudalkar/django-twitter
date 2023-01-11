@@ -5,6 +5,7 @@
 <link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet-view.css' %}">
 </head>
 
 <body>
@@ -30,11 +31,13 @@
 
 
 			<section class="main-section__tweets">
-				{% include 'twitter_web/include/tweet.html' with session_user=session_user tweet=post %}
+				{% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=post %}
 			</section>
 
 			<section class="main-section__make-tweet">
-				<div>Replying to @{{ post.user_id.username }}</div>
+				<div class="main-section__replying">
+					Replying to @{{ post.user_id.username }}
+				</div>
 				<div class="modal-tweet__content">
 					<div>
 						{% if user.session_user.profile_image_user.all %}
@@ -52,7 +55,7 @@
 						<!-- <input type="hidden" name="is_quote_tweet" value="False">
 						<input type="hidden" name="is_commercial" value="False"> -->
 						<div class="modal-tweet__form-text">
-							<textarea class="modal-tweet__text-area" name="tweet_text" rows="5" placeholder="What's happening?"></textarea>
+							<textarea class="modal-tweet__text-area" name="tweet_text" rows="2" placeholder="What's happening?"></textarea>
 							<select class="modal-tweet__select-privacy" name="tweet_privacy">
 								<option name="everyone">Everyone</option>
 								<option name="people_you_follow">People you follow</option>
@@ -76,9 +79,9 @@
 			</section>
 
 			<section class="main-section__comments">
-				{% for comment in comments %}
+				{% for comment_ in comments %}
 				<!-- Show parent comments -->
-				{% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=comment.comment_tweet %}
+				{% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=comment_.comment_tweet comment=comment_ %}
 				{% endfor %}
 			</section>
 		</main>

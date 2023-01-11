@@ -1,0 +1,23 @@
+.header-section {
+    background-color: #fff;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    position: sticky;
+    padding: 1.25rem 2rem;
+    top: 0;
+}
+
+.header-section h3 {
+    margin: 0;
+}
+
+.main-section__replying {
+    padding: 0 1rem 1rem;
+    color: #7f7f7f;
+}
+
+.main-section__make-tweet {
+    border-bottom: 1px solid #eee;
+    padding: 1rem;
+}

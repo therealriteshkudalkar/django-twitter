@@ -62,11 +62,11 @@
                 {% endfor %}
             </article>
 
-            <article>
+            <article class="main-section__form">
                 <form method="POST" action="{% url 'twitter_web:conversation' username=user.object.username %}">
                     {% csrf_token %}
-                    <input type="text" name="message">
-                    <input type="submit" value="send">
+                    <input class="main-section__form-text" type="text" placeholder="Enter a message" name="message">
+                    <input class="main-section__form-submit" type="submit" value="Send">
                 </form>
             </article>
 

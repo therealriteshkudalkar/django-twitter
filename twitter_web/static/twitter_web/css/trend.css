@@ -1,7 +1,11 @@
 .single-trend {
     width: 100%;
     text-align: left;
-    padding: 1rem 2rem;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
 }
 
 .single-trend__trend-number {

@@ -4,7 +4,7 @@
     <article class="message-list__item-container">
         <div class="message-list__profile-image">
             <div>
-                {% if user.profile_image_user.all %}
+                {% if user_.profile_image_user.all %}
                 {% for profile_image in user_.profile_image_user.all %}
                 {% if forloop.last %}
                 <img class="message-list__profile-image" src="{{ profile_image.image.url }}">

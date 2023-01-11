@@ -28,4 +28,5 @@
 .search-section__search-trends img {
     display: inline-block;
     width: 90%;
+    border-radius: 1rem;
 }
