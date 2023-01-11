@@ -1,10 +1,69 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+{% include 'twitter_web/include/head.html' with title=user.name %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/messages.css' %}">
 </head>
-<body>
 
-</body>
-</html>
+<body>
+  
+  {% include 'twitter_web/include/tweet-modal.html' %}
+
+  {% if not user.session_user %}
+  <div class="modal-login">
+    <h3 class="modal-login__title">Join Twitter</h3>
+    <p class="modal-login__subtitle">Login or register to complete the action.</p>
+    <div class="modal-login__buttons">
+      <a class="modal-login__button modal-login__button--login" href="{% url 'twitter_web:login' %}">Login</a>
+      <a class="modal-login__button modal-login__button--register" href="{% url 'twitter_web:register' %}">Register</a>
+    </div>
+    <button class="modal-login__cancel" id="cancel-button" onclick="dismissLoginModal()">X</button>
+  </div>
+  {% endif %}
+
+  {% include 'twitter_web/include/error-modal.html' %}
+
+  <div class="container">
+
+    {% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='profile' %}
+
+    <main class="main-section">
+
+        <header class="main-section__header">
+            <div class="main-section__go-back">
+                <a class="main-section__go-back-link" href="{% url 'twitter_web:profile' username=session_user.username %}">
+                    <div>
+                        <img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}">
+                    </div>
+                </a>
+            </div>
+            <div class="main-section__user-head">
+                <h3 class="main-section__user-heading">
+                    Messages
+                </h3>
+            </div>
+        </header>
+
+        <section>
+            {% for conversation_ in conversations %}
+            {% if conversation_.initiator == session_user %}
+            {% include 'twitter_web/include/message-list-item.html' with user_=conversation_.receiver conversation=conversation_ %}
+            {% else %}
+            {% include 'twitter_web/include/message-list-item.html' with user_=conversation_.initiator conversation=conversation_ %}
+            {% endif %}
+            {% endfor %}
+        </section>
+
+    </main>
+
+    {% include 'twitter_web/include/search-bar.html' %}
+
+  </div>
+
+<script src="{% static 'twitter_web/js/profile.js' %}"></script>
+<script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+
+{% include 'twitter_web/include/footer.html' %}

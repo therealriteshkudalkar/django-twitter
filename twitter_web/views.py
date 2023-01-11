@@ -11,9 +11,10 @@ from django.utils import timezone
 from django.db import transaction, Error
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.db.models import Count
 
 from .models import User, Bio, ProfileImage, HeaderImage, Follow, Tweet, TweetImage, QuoteTweet, CommentTweet, Retweet, \
-    Like, Impression, Bookmark, Message, Notification, Advertiser, Campaign
+    Like, Impression, Bookmark, Message, Conversation, Notification
 from .helper import int_to_string
 
 
@@ -211,7 +212,6 @@ def profile(request, username):
         user_query = User.objects.filter(username=username.lower())
 
         if not user_query.exists():
-            print("hello", username, 'haghi')
             request.session["error_message"] = "User does not exist"
             return HttpResponseRedirect(reverse('twitter_web:search'))
 
@@ -335,17 +335,9 @@ def edit_profile(request):
             header_image_url = 'default'
 
         template_context = {
-            'user': {
-                'fname': session_user.fname,
-                'lname': session_user.lname,
-                'username': session_user.username,
-                'email': session_user.email,
-                'country': session_user.country,
-                'bio': bio_text,
-                'profile_image_url': profile_image_url,
-                'header_image_url': header_image_url,
-                'is_account_private': session_user.is_account_private,
-                'dob': session_user.dob.strftime("%Y-%m-%d"),
+            'user': session_user,
+            'user_': {
+                'is_logged_in': True,
             }
         }
         return render(request, 'twitter_web/edit_profile.html', context=template_context)
@@ -793,11 +785,11 @@ def show_tweet(request, tweet_id):
             session_user = filtered_users.first()
 
         template_context = {
-            'session_user': session_user,
             'post': tweet,
             'comments': comments,
             'user': {
-                'is_logged_in': session_user is not None
+                'is_logged_in': session_user is not None,
+                'session_user': session_user,
             }
         }
 
@@ -810,23 +802,196 @@ def search(request):
         # if yes, then show that error on search page
         # else show the trending page
         error_message = request.session.get("error_message")
+        search_term = request.session.get("search_term")
+
+        session_username = request.session.get("username")
+        filtered_session_user = User.objects.filter(username=session_username)
+
+        if filtered_session_user.exists():
+            session_user = filtered_session_user.first()
+        else:
+            session_user = None
+
+        # get top 10 trending topics
+        tweets = Tweet.objects.all().order_by('-created_at')[:100]
+        word_dict = {}
+        for tweet in tweets:
+            words = tweet.text.split()
+            for word in words:
+                if len(word) < 4:
+                    continue
+                if word in word_dict:
+                    word_dict[word] += 1
+                else:
+                    word_dict[word] = 1
+        top_ten_words = sorted(word_dict.items(), key=lambda x: -x[1])
+        top_ten_words_list = [{'word': x[0], 'count': x[1]} for x in top_ten_words]
+
         if error_message:
+            request.session.pop('error_message')
             template_context = {
                 'error_message': error_message,
             }
+        elif search_term:
+            # get people related to search term
+            people_by_username = User.objects.filter(username__icontains=search_term)
+            people_by_fname = User.objects.filter(fname__icontains=search_term)
+            people_by_lname = User.objects.filter(lname__icontains=search_term)
+            people = people_by_username.union(people_by_fname, people_by_lname)
+
+            # get the latest tweets related to search term limit to 20
+            latest_tweets = Tweet.objects.filter(text__icontains=search_term).order_by('-created_at')[:20]
+
+            template_context = {
+                'session_user': session_user,
+                'people': people,
+                'trends': top_ten_words_list,
+                'latest_tweets': latest_tweets,
+                'user': {
+                    'is_logged_in': session_user is not None,
+                },
+                'country': 'India',
+            }
+
         else:
-            template_context = {}
+            # get people with most following
+            people = User.objects.annotate(followers_count=Count('followers')).order_by('-followers_count')
+
+            # get the latest tweets limit to 10
+            latest_tweets = Tweet.objects.all().order_by('-created_at')[:20]
+
+            template_context = {
+                'session_user': session_user,
+                'people': people,
+                'trends': top_ten_words_list,
+                'latest_tweets': latest_tweets,
+                'user': {
+                    'is_logged_in': session_user is not None,
+                },
+                'country': 'India',
+            }
         return render(request, 'twitter_web/search.html', context=template_context)
     else:
         # perform the search query
         query = request.POST.get("search")
-        # you can use like command from postgresql
-        # search for people
-        # search for trending topics
-        # search for trending topics in news
-        # if user has logged in then search for trending topics tailored to him
-        template_context = {}
-        return render(request, 'twitter_web/search.html', context=template_context)
+        request.session["search_term"] = query
+        return HttpResponseRedirect(reverse('twitter_web:search'))
+
+
+def message(request):
+    # if user is logged in then show messages page else redirect them to login page
+    if request.method == "GET":
+        session_username = request.session.get("username")
+        filtered_session_user = User.objects.filter(username=session_username)
+
+        if filtered_session_user.exists():
+            session_user = filtered_session_user.first()
+            # fetch all the messages where sender and receiver is session_user
+            conversation_initiator = Conversation.objects.filter(initiator=session_user)
+            conversation_receiver = Conversation.objects.filter(receiver=session_user)
+            all_conversations = conversation_receiver.union(conversation_initiator)
+
+            template_context = {
+                'session_user': session_user,
+                'conversations': all_conversations,
+                'user': {
+                    'is_logged_in': True,
+                }
+            }
+
+            return render(request, 'twitter_web/messages.html', context=template_context)
+        else:
+            request.session["error_message"] = "Login to access the page!"
+            return HttpResponseRedirect(reverse('twitter_web:search'))
+
+    else:
+        pass
+        # make a new conversation
+        # which is empty
+
+
+def conversation(request, username):
+
+    session_username = request.session.get("username")
+    filtered_session_user = User.objects.filter(username=session_username)
+
+    filtered_user = User.objects.filter(username=username)
+
+    if not filtered_user.exists() or not filtered_session_user.exists():
+        request.session["error_message"] = "Login to access the page!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
+
+    user = filtered_user.first()
+    session_user = filtered_session_user.first()
+
+    conversation_initiator = Conversation.objects.filter(initiator=session_user, receiver=user)
+    conversation_receiver = Conversation.objects.filter(initiator=user, receiver=session_user)
+
+    conv = None
+
+    if conversation_initiator.exists():
+        conv = conversation_initiator.first()
+
+    if conversation_receiver.exists():
+        conv = conversation_receiver.first()
+
+    # now get all the messages from that conversation
+
+    if conv is None:
+        # create a new conversation
+        conv = Conversation.objects.create(
+            initiator=session_user,
+            receiver=user,
+        )
+
+    if request.method == "GET":
+        template_context = {
+            'conversation': conv,
+            'session_user': session_user,
+            'user': {
+                'is_logged_in': True,
+                'object': user,
+            }
+        }
+        return render(request, 'twitter_web/conversation.html', context=template_context)
+    else:
+        # write post logic for the conversation
+        message_text = request.POST.get('message')
+        new_message = Message.objects.create(
+            conversation=conv,
+            text=message_text,
+            sender=session_user,
+            receiver=user,
+        )
+        conv.messages.add(new_message)
+        conv.save()
+
+        response = {
+            'response': 'successful',
+            'message': 'send new data'
+        }
+
+        return JsonResponse(response, safe=False)
+
+
+def settings(request):
+    if request.method == "GET":
+        session_username = request.session.get("username")
+        filtered_session_user = User.objects.filter(username=session_username)
+
+        if filtered_user.exists():
+            template_context = {
+                'user': {
+                    '': ''
+                }
+            }
+        else:
+            template_context = {
+                'user': {
+                    '': ''
+                }
+            }
+        return render(request, 'twitter_web')
 
 
 def notification(request):
@@ -841,18 +1006,3 @@ def notification(request):
         else:
             request.session["error_message"] = "Login to access the link"
             return HttpResponseRedirect(reverse('twitter_web:search'))
-
-
-def message(request):
-    # if user is logged in then show messages page else redirect them to login page
-    if request.method == "GET":
-        pass
-    else:
-        pass
-
-
-def conversation(request, username):
-    if request.method == "GET":
-        pass
-    else:
-        pass

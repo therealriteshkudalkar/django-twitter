@@ -1,0 +1,82 @@
+{% include 'twitter_web/include/head.html' with title=user.name %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'twitter_web/css/modal.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/nav-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/conversation.css' %}">
+</head>
+
+<body>
+
+    {% include 'twitter_web/include/tweet-modal.html' %}
+
+    {% if not user.session_user %}
+    <div class="modal-login">
+        <h3 class="modal-login__title">Join Twitter</h3>
+        <p class="modal-login__subtitle">Login or register to complete the action.</p>
+        <div class="modal-login__buttons">
+            <a class="modal-login__button modal-login__button--login" href="{% url 'twitter_web:login' %}">Login</a>
+            <a class="modal-login__button modal-login__button--register"
+                href="{% url 'twitter_web:register' %}">Register</a>
+        </div>
+        <button class="modal-login__cancel" id="cancel-button" onclick="dismissLoginModal()">X</button>
+    </div>
+    {% endif %}
+
+    {% include 'twitter_web/include/error-modal.html' %}
+
+    <div class="container">
+
+        {% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='profile' %}
+
+        <main class="main-section">
+
+            <header class="main-section__header">
+                <div class="main-section__go-back">
+                    <a class="main-section__go-back-link" href="{% url 'twitter_web:message' %}">
+                        <div>
+                            <img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}">
+                        </div>
+                    </a>
+                </div>
+                <div class="main-section__user-head">
+                    <h3 class="main-section__user-heading">
+                        <span>{{ user.object.fname }}</span>
+                        <span>{{ user.object.lname }}</span>
+                        {% if user.object.is_verified %}
+                        <span><img class="main-section__user-verified-tag"
+                                src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
+                        {% endif %}
+                    </h3>
+                    <!-- <p class="main-section__user-tweet-count">
+                        {{ user.object.tweet_count }} Tweet{{ user.object.tweet_count|pluralize:" ,s"}}
+                    </p> -->
+                </div>
+            </header>
+
+            <article class="main-section__includer">
+                {% for message_ in conversation.messages.all %}
+                {% include 'twitter_web/include/conversation-list-item.html' with message=message_ session_user=session_user %}
+                {% endfor %}
+            </article>
+
+            <article>
+                <form method="POST" action="{% url 'twitter_web:conversation' username=user.object.username %}">
+                    {% csrf_token %}
+                    <input type="text" name="message">
+                    <input type="submit" value="send">
+                </form>
+            </article>
+
+        </main>
+
+        {% include 'twitter_web/include/search-bar.html' %}
+
+    </div>
+
+    <script src="{% static 'twitter_web/js/profile.js' %}"></script>
+    <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+
+{% include 'twitter_web/include/footer.html' %}

@@ -1,0 +1,82 @@
+.main-section__user-head {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.main-section__user-save {
+    padding: 0.5rem 2rem;
+    background-color: #00acee;
+    color: #fff;
+    border: none;
+    border-radius: 5rem;
+}
+
+.edit-section__header-image-label > div,
+.edit-section__profile-image-label > div  {
+    position: relative;
+}
+
+.edit-section__header-img {
+    height: 10rem;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.edit-section__header-img--overlay {
+    object-fit: scale-down;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.edit-section__header-image-selector,
+.edit-section__profile-image-selector {
+    display: none;
+}
+
+.edit-section__profile-img {
+    height: 7rem;
+    width: 7rem;
+    border-radius: 7rem;
+    border: 3px solid #fff;
+    object-fit: cover;
+    object-position: center;
+    position: relative;
+    left: 2rem;
+    top: -3.5rem;
+}
+
+.edit-section__profile-img--overlay {
+    position: absolute;
+    object-fit: scale-down;
+    z-index: 10;
+    left: 2rem;
+}
+
+.edit-section__first-name,
+.edit-section__last-name,
+.edit-section__profile-bio,
+.edit-section__profile-country {
+    display: flex;
+    column-gap: 1rem;
+    row-gap: 1rem;
+    padding: 0 2rem 2rem;
+    align-items: center;
+}
+
+#profile-first-name,
+#profile-last-name,
+#profile-bio,
+#profile-country {
+    display: inline-block;
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #00acee;
+    border-radius: 0.5rem;
+}

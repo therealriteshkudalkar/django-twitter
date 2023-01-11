@@ -52,7 +52,7 @@
         </a>
       </li>
       <li class="navigation-section__nav-item">
-        <a class="navigation-section__nav-item-link" href="/profile/{{ session_user.username }}">
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:profile' username=session_user.username %}">
           {% if page == 'profile' %}
           <img src="{% static 'twitter_web/assets/icons/icons8-administrator-male-96-fill.png' %}"></a>
           {% else %} 
@@ -61,8 +61,8 @@
       </li>
       {% endif %}
       <li class="navigation-section__nav-item">
-        <a class="navigation-section__nav-item-link">
-          {% if page == 'search' %}
+        <a class="navigation-section__nav-item-link" href="{% url 'twitter_web:settings' %}">
+          {% if page == 'settings' %}
           <img src="{% static 'twitter_web/assets/icons/icons8-settings-96-fill.png' %}">
           {% else %} 
           <img src="{% static 'twitter_web/assets/icons/icons8-settings-96.png' %}">

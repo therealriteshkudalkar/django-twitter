@@ -6,6 +6,7 @@
 <link rel="stylesheet" href="{% static 'twitter_web/css/timeline.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/follow-item.css' %}">
 </head>
 
 <body>
@@ -18,8 +19,8 @@
     {% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='timeline' %}
 
     <main class="main-section">
-      <header class="header-section">
-        <div>
+      <header class="main-section__header">
+        <div class="main-section__heads">
           <h3>Followings</h3>
           <h3>Followers</h3>
         </div>

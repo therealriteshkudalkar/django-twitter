@@ -149,11 +149,21 @@ class Notification(models.Model):
     created_at = models.DateTimeField(default=now, editable=False)
 
 
+class Conversation(models.Model):
+    id = models.AutoField(primary_key=True, null=False, blank=False)
+    initiator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversation_sender')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversation_receiver')
+    created_at = models.DateTimeField(default=now, editable=False)
+    messages = models.ManyToManyField("Message", default=None, blank=True, related_name='conversation_messages')
+
+
 class Message(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
-    sender_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sender_id')
-    receiver_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='receiver_id')
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages_conversation')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='message_conversation_sender', default=7)
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='message_conversation_receiver', default=6)
     text = models.CharField(max_length=1024)
+    read_status = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=now, editable=False)
 
 

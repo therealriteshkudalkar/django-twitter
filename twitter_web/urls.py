@@ -32,4 +32,6 @@ urlpatterns = [
     path('search', views.search, name='search'),
     path('notification', views.notification, name='notification'),
     path('bookmark', views.bookmark, name='bookmark'),
+
+    path('settings', views.settings, name='settings'),
 ]

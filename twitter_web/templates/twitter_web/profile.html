@@ -66,11 +66,14 @@
 
           <div class="main-section__profile-image">
             <div class="main-section__profile-image-circle">
-              {% if user.profile_image_url == "default" %}
-              <img class="main-section__profile-img"
-                src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+              {% if user.profile_image_user.all %}
+              {% for profile_image in user.profile_image_user.all %}
+              {% if forloop.last %}
+              <img class="main-section__profile-img" src="{{ profile_image.image.url }}">
+              {% endif %}
+              {% endfor %}
               {% else %}
-              <img class="main-section__profile-img" src="{{ user.profile_image_url }}">
+              <img class="main-section__profile-img"  src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
               {% endif %}
             </div>
 
@@ -93,9 +96,11 @@
               </form>
               {% endif %}
 
-              <!-- <button class="main-section__more-option">
-                <img src="{% static 'twitter_web/assets/icons/icons8-menu-vertical-96.png' %}">
-              </button> -->
+              {% if not user.is_same_user %}
+              <a class="main-section__more-option" href="{% url 'twitter_web:conversation' username=user.username %}">
+                <img src="{% static 'twitter_web/assets/icons/icons8-secured-letter-96.png' %}">
+              </a>
+              {% endif %}
             </div>
           </div>
         </section>
@@ -156,6 +161,7 @@
         </div>
         <div class="main-section__tabs">
           <section class="main-section__tweets">
+            {% if user.tweets %}
             {% for tweet_ in user.tweets %}
             {% if tweet_.get_type == 'retweet' %}
             {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
@@ -163,11 +169,24 @@
             {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False  retweeted_by='' %}
             {% endif %}
             {% endfor %}
+            {% else %}
+            <div class="main-section__tweets-emtpy">
+              <h4 class="main-section__tweets-empty-heading">Compose your very first tweet</h4>
+              <img class="main-section__tweets-empty-image" src="{% static 'twitter_web/assets/icons/empty_tweets.png' %}">
+            </div>
+            {% endif %}
           </section>
           <section class="main-section__liked-tweets">
+            {% if user.liked_tweets %}
             {% for tweet_ in user.liked_tweets %}
             {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id %}
             {% endfor %}
+            {% else %}
+            <div class="main-section__tweets-emtpy">
+              <h4 class="main-section__tweets-empty-heading">Like your very first tweet</h4>
+              <img class="main-section__tweets-empty-image" src="{% static 'twitter_web/assets/icons/empty_tweets.png' %}">
+            </div>
+            {% endif %}
           </section>
         </div>
         {% else %}

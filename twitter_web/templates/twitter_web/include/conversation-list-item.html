@@ -1,0 +1,6 @@
+<div class="single-message single-message {% if session_user == message.sender %} single-message--blue {% endif %}">
+    <div class="single-message__body {% if session_user == message.sender %} single-message__body--blue {% endif %}">
+        <p class="single-message__body-text {% if session_user == message.sender %} single-message__body-text--blue {% endif %}">{{ message.text }}</p>
+        <p class="single-message__body-date {% if session_user == message.sender %} single-message__body-date--blue {% endif %}">{{ message.created_at|date:"g:i a" }}</p>
+    </div>
+</div>

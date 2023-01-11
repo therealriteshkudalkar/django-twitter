@@ -1,0 +1,43 @@
+{% load static %}
+
+<a class="message-list__item" href="{% url 'twitter_web:conversation' username=user_.username %}">
+    <article class="message-list__item-container">
+        <div class="message-list__profile-image">
+            <div>
+                {% if user.profile_image_user.all %}
+                {% for profile_image in user_.profile_image_user.all %}
+                {% if forloop.last %}
+                <img class="message-list__profile-image" src="{{ profile_image.image.url }}">
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <img class="message-list__profile-image"  src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+                {% endif %}
+            </div>
+        </div>
+        <div class="message-list__profile-info">
+            <div class="message-list__profile">
+                <p class="message-list__profile-identity">
+                    <span class="message-list__profile-name">
+                        {{ user_.fname }} {{ user_.lname }}
+                    </span>
+                    {% if user_.is_verified %}
+                    <span>
+                        <img class="main-section__user-verified-tag"
+                             src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}">
+                    </span>
+                    {% endif %}
+                    <span class="message-list__profile-username">@{{ user_.username }}</span>
+                </p>
+                {% for message in conversation.messages.all %}
+                {% if forloop.last %}
+                <p class="message-list__profile-date">{{ message.created_at|date:"d/m/y" }}</p>
+            </div>
+            <div class="message-list__profile-message">
+                <span>{{ message.text|slice:30 }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </article>
+</a>

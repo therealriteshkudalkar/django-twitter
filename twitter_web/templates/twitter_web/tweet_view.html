@@ -19,12 +19,12 @@
 
 	<div class="container">
 
-		{% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='timeline' %}
+		{% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user page='timeline' %}
 
 		<main class="main-section">
 			<header class="header-section">
 				<div>
-					<h3>{{ post.user_id.fname }}</h3>
+					<h3>Tweet</h3>
 				</div>
 			</header>
 
@@ -34,6 +34,7 @@
 			</section>
 
 			<section class="main-section__make-tweet">
+				<div>Replying to @{{ post.user_id.username }}</div>
 				<div class="modal-tweet__content">
 					<div>
 						{% if user.session_user.profile_image_user.all %}
@@ -76,7 +77,8 @@
 
 			<section class="main-section__comments">
 				{% for comment in comments %}
-				{% include 'twitter_web/include/tweet.html' with session_user=session_user tweet=comment.comment_tweet %}
+				<!-- Show parent comments -->
+				{% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=comment.comment_tweet %}
 				{% endfor %}
 			</section>
 		</main>

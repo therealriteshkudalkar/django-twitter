@@ -1,0 +1,49 @@
+.message-list__item {
+    text-decoration: none;
+    color: #000;
+}
+
+.message-list__item-container {
+    display: flex;
+    border-bottom: 1px solid #eee;
+    padding: 1rem;
+    column-gap: 1rem;
+}
+
+.message-list__profile-image {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 5rem;
+}
+
+.message-list__profile-info {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.5rem;
+    width: 100%;
+}
+
+.message-list__profile {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.message-list__profile-identity {
+    display: flex;
+    column-gap: 0.75rem;
+    margin: 0;
+}
+
+.message-list__profile-username {
+    color: #7f7f7f;
+}
+
+.message-list__profile-date {
+    margin: 0;
+    color: #7f7f7f;
+}
+
+.message-list__profile-message {
+    color: #7f7f7f;
+}

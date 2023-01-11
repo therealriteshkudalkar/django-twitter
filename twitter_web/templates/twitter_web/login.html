@@ -12,7 +12,7 @@
         </div>
         {% if error_message %}
         <div class="main-content__error">
-            <p class="main-content__error-message {% if error_message_color == 'green' %} .main-content__success-message {% endif %}">{{ error_message }}</p>
+            <p class="main-content__error-message {% if error_message_color %} main-content__success-message {% endif %}">{{ error_message }}</p>
         </div>
         {% endif %}
         <article class="main-content__form-section">

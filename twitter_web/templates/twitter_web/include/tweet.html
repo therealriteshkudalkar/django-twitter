@@ -9,14 +9,16 @@
     </div>
   {% endif %}
   <div class="single-tweet__tweet-sections">
-    <a class="single-tweet__tweet-profile-image-section">
+    <a class="single-tweet__tweet-profile-image-section" href="{% url 'twitter_web:profile' username=tweet.user_id.username %}">
       <div>
         {% if tweet.user_id.profile_image_user.all %}
-        {% for profile_image in tweet.user_id.profile_image_user.all|slice:":1" %}
+        {% for profile_image in tweet.user_id.profile_image_user.all %}
+        {% if forloop.last %}
         <img class="single-tweet__tweet-profile-img" src="{{ profile_image.image.url }}">
+        {% endif %}
         {% endfor %}
         {% else %}
-        <img class="single-tweet__tweet-profile-img" src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+        <img class="single-tweet__tweet-profile-img"  src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
         {% endif %}
       </div>
     </a>
