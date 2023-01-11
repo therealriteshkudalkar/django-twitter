@@ -820,10 +820,10 @@ def search(request):
             for word in words:
                 if len(word) < 4:
                     continue
-                if word in word_dict:
-                    word_dict[word] += 1
+                if word.lower() in word_dict:
+                    word_dict[word.lower()] += 1
                 else:
-                    word_dict[word] = 1
+                    word_dict[word.lower()] = 1
         top_ten_words = sorted(word_dict.items(), key=lambda x: -x[1])
         top_ten_words_list = [{'word': x[0], 'count': x[1]} for x in top_ten_words]
 
@@ -842,6 +842,8 @@ def search(request):
             # get the latest tweets related to search term limit to 20
             latest_tweets = Tweet.objects.filter(text__icontains=search_term).order_by('-created_at')[:20]
 
+            print(latest_tweets)
+
             template_context = {
                 'session_user': session_user,
                 'people': people,
@@ -859,6 +861,8 @@ def search(request):
 
             # get the latest tweets limit to 10
             latest_tweets = Tweet.objects.all().order_by('-created_at')[:20]
+
+            print(latest_tweets)
 
             template_context = {
                 'session_user': session_user,

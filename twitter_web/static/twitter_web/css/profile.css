@@ -9,7 +9,6 @@ body {
     padding: 0;
 }
 
-
 /*************************** Main Section ***************************/
 
 .container {
@@ -269,11 +268,19 @@ body {
     width: 100%;
 }
 
+.search-section {
+    display: none;
+}
+
 @media(min-width: 60rem) {
 
     .container {
         grid-template-columns: 5rem 7fr 4fr;
         width: 80%;
         max-width: 80rem;
+    }
+
+    .search-section {
+        display: block;
     }
 }

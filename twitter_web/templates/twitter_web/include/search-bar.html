@@ -1,13 +1,21 @@
+{% load static %}
 <aside class="search-section">
-  <div>
+  <div class="search-section__search-bar">
     <form action="{% url 'twitter_web:search' %}" method="POST">
       {% csrf_token %}
-      <div>
-        <input type="text" name="search">
-      </div>
+      <input class="search-section__search-input" type="text" name="search" placeholder="Search" />
     </form>
+  </div>
+  <div class="search-section__search-trends">
+    {% if trends %} 
+    {% for trend_ in trends|slice:":5" %} 
+    {% include 'twitter_web/include/trend.html' with trend=trend_ %} 
+    {% endfor %}
+    {% else %}
     <div>
-      
+      <h5>Trends unavailable</h5>
+      <img src="{% static 'twitter_web/assets/icons/empty_trends.png' %}">
     </div>
+    {% endif %}
   </div>
 </aside>

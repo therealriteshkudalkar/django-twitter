@@ -15,7 +15,7 @@ body {
     width: 100vw;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 1fr 7fr;
+    grid-template-columns: 5rem 7fr;
     grid-template-areas: "nav main";
 }
 
@@ -36,6 +36,7 @@ body {
     top: 0;
     z-index: 1;
     backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
 }
 
 .make-tweet-section {
@@ -48,4 +49,28 @@ body {
 
 .make-tweet-section__tweet {
     width: 100%;
+}
+
+.tweet-section-tweets-empty {
+    text-align: center;
+}
+
+.tweet-section__tweets-empty-heading {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.tweet-section__tweets-empty-image {
+    display: block;
+    width: 90%;
+    margin: auto;
+}
+
+@media(min-width: 60rem) {
+
+    .container {
+        grid-template-columns: 5rem 7fr 4fr;
+        width: 80%;
+        max-width: 80rem;
+    }
 }

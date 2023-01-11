@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/follow-item.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/trend.css' %}">
 </head>
 
 <body>
@@ -33,58 +34,44 @@
 	
 		<main class="main-section">
 
-			<header>
-				<nav>
-					<a>
-						<div>
-							<!-- This image changes to back button when clicked on search field-->
-							<img>
-						</div>
-					</a>
+			<header class="main-section__header">
+				<div class="main-section__go-back">
+				  <a class="main-section__go-back-link" href="{% url 'twitter_web:search' %}">
 					<div>
-						<img>
-						<form action="{% url 'twitter_web:search' %}" method="POST">
-							{% csrf_token %}
-							<input type="text" name="search">
-							<input type="submit" value="Go">
-						</form>
+					  <img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}">
 					</div>
-					<button>
-						<img>
-					</button>
-				</nav>
-			</header>
-
-			<!-- Show back button when visible -->
-			<!-- Appears when clicked on search field otherwise hidden -->
-			<section class="searching">
-				<p>Try searching for people, topics or keywords</p>
-			</section>
+				  </a>
+				</div>
+				<div class="main-section__user-head">
+					<form action="{% url 'twitter_web:search' %}" method="POST">
+						{% csrf_token %}
+						<input class="main-section__search-tab" type="text" placeholder="Search" name="search">
+						<!--input type="submit" src="{% static 'twitter_web/assets/icons/icons8-search-96-blue.png' %}" value="Go"-->
+					</form>
+				</div>
+			  </header>
 
 			{% if error_message %}
 			<!-- Show back button when visible -->
 			<section class="error">
 				<p>{{ error_message }}</p>
 			</section>
-
 			{% else %}
-
 			<main class="main-contents">
-				<section class="tab-link">
-					<button class="tab-link__item">Latest Tweets</button>
-					<button class="tab-link__item">Trending</button>
-					<button class="tab-link__item">People</button>
+				<section class="tab-links">
+					<div class="tab-link__item tab-link__item--selected">Latest Tweets</div>
+					<div class="tab-link__item">Trending</div>
+					<div class="tab-link__item">People</div>
 				</section>
 				
 				<section class="tabs">
 					<article class="latest-tweets">
-						<mark>Tweets</mark>
 						{% for tweet_ in latest_tweets %}
 							{% include 'twitter_web/include/tweet.html' with tweet=tweet_ session_user=session_user %}
 						{% endfor %}
 					</article>
 					<article class="trending">
-						<mark>{{ country }} trends</mark>
+						<p>Trends in {{ country }}</p>
 						{% for trend_ in trends|slice:":10" %}
 							{% include 'twitter_web/include/trend.html' with trend=trend_ %}
 						{% endfor %}
@@ -95,10 +82,13 @@
 						{% endfor %}
 					</article>
 				</section>
-
 			</main>
 			{% endif %}
+
 		</main>
+
+		{% include 'twitter_web/include/search-bar.html' %}
+
 	</div>
 
 {% include 'twitter_web/include/footer.html' %}

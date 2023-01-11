@@ -21,8 +21,8 @@
     <main class="main-section">
       <header class="main-section__header">
         <div class="main-section__heads">
-          <h3>Followings</h3>
-          <h3>Followers</h3>
+          <h3 class="main-section__heads-item main-section__heads-item--selected" onclick="selectTab('following')">Followings</h3>
+          <h3 class="main-section__heads-item" onclick="selectTab('followers')">Followers</h3>
         </div>
       </header>
 
@@ -45,7 +45,6 @@
 
 <div>
 
-<script src="{% static 'twitter_web/js/profile.js' %}"></script>
-<script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+<script src="{% static 'twitter_web/js/follow.js' %}"></script>
 
 {% include 'twitter_web/include/footer.html' %}

@@ -66,14 +66,11 @@
 
           <div class="main-section__profile-image">
             <div class="main-section__profile-image-circle">
-              {% if user.profile_image_user.all %}
-              {% for profile_image in user.profile_image_user.all %}
-              {% if forloop.last %}
-              <img class="main-section__profile-img" src="{{ profile_image.image.url }}">
-              {% endif %}
-              {% endfor %}
+              {% if user.profile_image_url == "default" %}
+              <img class="main-section__profile-img"
+                   src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
               {% else %}
-              <img class="main-section__profile-img"  src="{% static 'twitter_web/assets/icons/default_profile_image.png' %}">
+              <img class="main-section__profile-img" src="{{ user.profile_image_url }}">
               {% endif %}
             </div>
 

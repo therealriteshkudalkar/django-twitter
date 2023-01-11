@@ -66,6 +66,7 @@
         </div>
       </section>
       <section class="tweet-section">
+        {% if user.tweets %}
         {% for tweet_ in user.tweets %}
         {% if tweet_.get_type == 'retweet' %}
         {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_.post_id is_retweeted=True retweeted_by=tweet_.user_id %}
@@ -73,6 +74,12 @@
         {% include 'twitter_web/include/tweet.html' with session_user=user.session_user tweet=tweet_ is_retweeted=False retweeted_by='' %}
         {% endif %}
         {% endfor %}
+        {% else %}
+        <div class="tweet-section__tweets-emtpy">
+          <h4 class="tweet-section__tweets-empty-heading">Follow someone to feed your timeline</h4>
+          <img class="tweet-section__tweets-empty-image" src="{% static 'twitter_web/assets/icons/empty_timeline.png' %}">
+        </div>
+        {% endif %}
       </section>
     </main>
 

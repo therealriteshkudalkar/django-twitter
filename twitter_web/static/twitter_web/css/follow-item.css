@@ -8,10 +8,18 @@
     z-index: 1;
 }
 
-.main-section__heads > h3 {
-    border-bottom: 2px solid #00acee;
+.main-section__heads-item {
     margin: 0;
     padding: 1rem;
+    cursor: pointer;
+}
+
+.main-section__heads-item--selected {
+    border-bottom: 2px solid #00acee;
+}
+
+.main-section__followers  {
+    display: none;
 }
 
 .follow-item {
@@ -55,6 +63,10 @@
     display: flex;
     flex-direction: column;
     row-gap: 0.4rem;
+}
+
+.follow-item__user-verified-tag {
+    height: 1rem;
 }
 
 .follow-item__profile-info > h3 {

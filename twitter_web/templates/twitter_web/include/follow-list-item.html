@@ -17,7 +17,18 @@
         <a class="follow-item__profile-detail" href="{% url 'twitter_web:profile' username=user.username %}">
             <div class="follow-item__profile-detail-container">
                 <div class="follow-item__profile-info">
-                    <h3>{{ user.fname }} {{ user.lname}}</h3>
+                    <h3>
+                        <span>
+                            {{ user.fname }} 
+                            {{ user.lname}}
+                        </span>
+                        {% if user.is_verified %}
+                        <span>
+                            <img class="follow-item__user-verified-tag"
+                                src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}">
+                        </span>
+                        {% endif %}
+                    </h3>
                     <span>@{{ user.username }}</span>
                     {% if session_user in user.followers.all %}
                     <span class="follow-item__profile-info-follows">Follows you</span>
@@ -26,14 +37,15 @@
                 <div class="follow-item__profile-follow">
                     <form onsubmit="return false" method="POST" action="{% url 'twitter_web:follow' %}">
                         {% csrf_token %}
-                        <input type="hidden" name="user_id" value="{{ user.id }}">
-                        {% if session_user in user.followers.all  %}
-                        <button class="follow-item__follow-button follow-item__follow-button--following" onclick="">Following</button>
-                        {% elif session_user in user.followings.all %}
-                        <button class="follow-item__follow-button" onclick="">Follow Back</button>
+                        <input type="hidden" name="follower" value="{{ session_user.username }}">
+                        <input type="hidden" name="profile" value="{{ user.username }}">
+                        {% if user in session_user.followings.all %}
+                        <button class="follow-item__follow-button follow-item__follow-button--following" onclick="onFollowButtonClick(this, {{ user.id }})">Following</button>
+                        {% elif user in session_user.followers.all %}
+                        <button class="follow-item__follow-button" onclick="onFollowButtonClick(this, {{ user.id }})">Follow Back</button>
                         {% elif session_user == user %}
                         {% else %}
-                        <button class="follow-item__follow-button" onclick="">Follow</button>
+                        <button class="follow-item__follow-button" onclick="onFollowButtonClick(this, {{ user.id }})">Follow</button>
                         {% endif %}
                     </form>
                 </div>

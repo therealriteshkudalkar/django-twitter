@@ -1,0 +1,19 @@
+.single-trend {
+    width: 100%;
+    text-align: left;
+    padding: 1rem 2rem;
+}
+
+.single-trend__trend-number {
+    font-weight: bold;
+    color: #7f7f7f;
+}
+
+.single-trend__trend-word {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.single-trend__trend-count {
+    color: #7f7f7f;
+}

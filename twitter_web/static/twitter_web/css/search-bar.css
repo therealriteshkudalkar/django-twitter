@@ -1,0 +1,31 @@
+.search-section {
+    padding: 1rem;
+    border-left: 1px solid #eee;
+    border-right: 1px solid #eee;
+}
+
+/* .search-section__search-bar > form {
+    text-align: center;
+} */
+
+
+.search-section__search-input {
+    padding: 1rem 2rem;
+    border: none;
+    background-color: #eee;
+    border-radius: 3rem;
+    width: 100%;
+}
+
+.search-section__search-trends {
+    border-radius: 2rem;
+    text-align: center;
+    margin-top: 2rem;
+    background-color: #eee;
+    padding: 1rem 0;
+}
+
+.search-section__search-trends img {
+    display: inline-block;
+    width: 90%;
+}
