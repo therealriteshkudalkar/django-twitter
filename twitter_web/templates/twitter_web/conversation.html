@@ -50,9 +50,6 @@
                                 src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
                         {% endif %}
                     </h3>
-                    <!-- <p class="main-section__user-tweet-count">
-                        {{ user.object.tweet_count }} Tweet{{ user.object.tweet_count|pluralize:" ,s"}}
-                    </p> -->
                 </div>
             </header>
 
@@ -63,10 +60,10 @@
             </article>
 
             <article class="main-section__form">
-                <form method="POST" action="{% url 'twitter_web:conversation' username=user.object.username %}">
+                <form class="main-section__message-form" onsubmit="return false" method="POST" action="{% url 'twitter_web:conversation' username=user.object.username %}">
                     {% csrf_token %}
                     <input class="main-section__form-text" type="text" placeholder="Enter a message" name="message">
-                    <input class="main-section__form-submit" type="submit" value="Send">
+                    <input class="main-section__form-submit" type="submit" value="Send" onclick="onSubmitMessage(this, {{ session_user.id }})">
                 </form>
             </article>
 
@@ -78,5 +75,6 @@
 
     <script src="{% static 'twitter_web/js/profile.js' %}"></script>
     <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
+    <script src="{% static 'twitter_web/js/conversation.js' %}"></script>
 
 {% include 'twitter_web/include/footer.html' %}

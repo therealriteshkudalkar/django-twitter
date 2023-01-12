@@ -38,6 +38,16 @@
     color: #7fd5f6;
 }
 
+.main-section {
+    overflow: hidden;
+}
+
+.main-section__includer {
+    height: calc(100vh - 8.5rem);
+    overflow-y: scroll;
+    padding: 0 1.5rem;
+}
+
 .main-section__form {
     width: 100%;
     text-align: center;
@@ -45,8 +55,9 @@
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
     position: sticky;
-    top: 100%;
+    top: calc(100% - 3rem);
     padding: 1rem;
+    z-index: 10;
 }
 
 .main-section__form-text {
