@@ -21,6 +21,23 @@ body {
     grid-template-areas: "nav main";
 }
 
+.error-section {
+    padding: 1rem;
+}
+
+.error-section__heading {
+    text-align: center;
+}
+
+.error-section__image {
+    text-align: center;
+}
+
+.error-section__image > img {
+    display: inline-block;
+    width: 90%;
+}
+
 .main-section {
     overflow-y: scroll;
     /* height: 100vh; */

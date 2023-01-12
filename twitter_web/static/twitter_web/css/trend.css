@@ -11,6 +11,7 @@
 .single-trend__trend-number {
     font-weight: bold;
     color: #7f7f7f;
+    font-size: 0.9rem;
 }
 
 .single-trend__trend-word {

@@ -18,17 +18,18 @@ from .models import User, Bio, ProfileImage, HeaderImage, Follow, Tweet, TweetIm
 from .helper import int_to_string
 
 
-def error_404(request, exception, template_name='twitter_web/404.html'):
+def error_404(request, template_name='twitter_web/404.html'):
     response = render(request, template_name)
     response.status_code = 404
     return response
 
 
 def home(request):
-    # if user is present in session then take them to timeline
-    # else redirect to search page
-    # show a design page
-    return HttpResponseRedirect(reverse('twitter_web:login'))
+    username = request.session.get("username")
+    if username:
+        return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={
+                'username': username}))
+    return render(request, 'twitter_web/home.html')
 
 
 def register(request):
@@ -150,7 +151,6 @@ def register(request):
 
 def login(request):
     if request.method == 'GET':
-        # if user is already logged in then redirect to timeline
         session_username = request.session.get('username')
         if session_username:
             return HttpResponseRedirect(reverse('twitter_web:timeline', kwargs={
@@ -438,6 +438,9 @@ def post_tweet(request):
                     counter += 1
 
             return HttpResponseRedirect(reverse('twitter_web:profile', kwargs={'username': session_username}))
+    else:
+
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def retweet(request):
@@ -480,6 +483,9 @@ def retweet(request):
             response["response"] = "login"
             response["response_message"] = "You need to login to proceed with the action."
         return JsonResponse(data=response, safe=False)
+    else:
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def like(request):
@@ -520,6 +526,9 @@ def like(request):
             response["response"] = "login"
             response["response_message"] = "You need to login to proceed with the action."
         return JsonResponse(data=response, safe=False)
+    else:
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def impression(request):
@@ -761,6 +770,9 @@ def delete_tweet(request):
             }
 
         return JsonResponse(data=response, safe=False)
+    else:
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def show_tweet(request, tweet_id):
@@ -794,6 +806,9 @@ def show_tweet(request, tweet_id):
         }
 
         return render(request, 'twitter_web/tweet_view.html', context=template_context)
+    else:
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def search(request):
@@ -909,9 +924,8 @@ def message(request):
             return HttpResponseRedirect(reverse('twitter_web:search'))
 
     else:
-        pass
-        # make a new conversation
-        # which is empty
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def conversation(request, username):
@@ -983,19 +997,25 @@ def settings(request):
         session_username = request.session.get("username")
         filtered_session_user = User.objects.filter(username=session_username)
 
-        if filtered_user.exists():
+        if filtered_session_user.exists():
+            session_user = filtered_session_user.first()
             template_context = {
+                'session_user': session_user,
                 'user': {
-                    '': ''
+                    'is_logged_in': True,
                 }
             }
         else:
             template_context = {
+                'session_user': None,
                 'user': {
-                    '': ''
+                    'is_logged_in': False,
                 }
             }
-        return render(request, 'twitter_web')
+        return render(request, 'twitter_web/settings.html', context=template_context)
+    else:
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))
 
 
 def notification(request):
@@ -1010,3 +1030,6 @@ def notification(request):
         else:
             request.session["error_message"] = "Login to access the link"
             return HttpResponseRedirect(reverse('twitter_web:search'))
+    else:
+        request.session["error_message"] = "Not a valid url!"
+        return HttpResponseRedirect(reverse('twitter_web:search'))

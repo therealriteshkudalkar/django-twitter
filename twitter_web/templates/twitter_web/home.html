@@ -1,13 +1,53 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Twitter</title>
+{% include 'twitter_web/include/head.html' with title='Home' %}
+{% load static %}
 </head>
 <body>
+    <div>
+        <div>
+            <div>
+                <img src="{% static 'twitter_web/assets/icons/main.jpg' %}">
+            </div>
+            <div>
+                <h3>See what's happening in the world right now</h3>
+                <div>
+                    <ul>
+                        <li>
+                            <div>
+                                <img src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}">
+                                <p>Follow your interests</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <img src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}">
+                                <p>Hear what people are talking about</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                                <img src="{% static 'twitter_web/assets/icons/icons8-home-page-96.png' %}">
+                                <p>Join the conversation</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div>
+                <img>
+                <h4>Join Twitter Today</h4>
+            </div>
+            <div>
+                <a href="{% url 'twitter_web:register' %}">Register</a>
+                <div>
+                    <hr>
+                    <p>Or, already have an account?</p>
+                    <hr>
+                </div>
+                <a href="{% url 'twitter_web:login' %}">Login</a>
+            </div>
+        </div>
+    </div>
 
-</body>
-</html>
+{% include 'twitter_web/include/footer.html' %}

@@ -148,7 +148,6 @@ function onBookmarkTweetButtonClick(context, tweet_id) {
 
 function onDeleteTweetButtonClick(context, tweet_id) {
     const form = context.parentElement;
-
     form.submit();
 }
 

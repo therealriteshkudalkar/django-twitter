@@ -2,14 +2,17 @@
 let messagesContainer = document.querySelector(".main-section__includer");
 messagesContainer.scrollTo(0, messagesContainer.scrollHeight);
 
+// Pick out the last child's id and make all the ids less than or equal to this as read
+let lastMessage = messagesContainer.getLas
+
 function messageTemplate(isSender, message, strTime) {
-    return new String(`
+    return `
     <div class="single-message single-message ` + (isSender ? 'single-message--blue' : '') + `">
         <div class="single-message__body ` + (isSender ? 'single-message__body--blue ' : '') + `">
             <p class="single-message__body-text ` + (isSender ? 'single-message__body-text--blue' : '') + `">` + message + `</p>
             <p class="single-message__body-date ` + (isSender ? 'single-message__body-date--blue' : '') + `">` + strTime + `</p>
         </div>
-    </div>`)
+    </div>`;
 }
 
 

@@ -116,36 +116,36 @@
             <select id="profile-country" name="country" value="{{ user.country }}">
               <option value="Afghanistan" {% if user.country == 'Afghanistan' %}{% endif %}>Afghanistan
               </option>
-              <option value="Albania" {% if user.country == '' %} selected {% endif %}>Albania</option>
-              <option value="Algeria" {% if user.country == '' %} selected {% endif %}>Algeria</option>
-              <option value="American Samoa" {% if user.country == '' %} selected {% endif %}>American Samoa
+              <option value="Albania" {% if user.country == 'Albania' %} selected {% endif %}>Albania</option>
+              <option value="Algeria" {% if user.country == 'Algeria' %} selected {% endif %}>Algeria</option>
+              <option value="American Samoa" {% if user.country == 'American Samoa' %} selected {% endif %}>American Samoa
               </option>
-              <option value="Andorra" {% if user.country == '' %} selected {% endif %}>Andorra</option>
-              <option value="Angola" {% if user.country == '' %} selected {% endif %}>Angola</option>
-              <option value="Anguilla" {% if user.country == '' %} selected {% endif %}>Anguilla</option>
-              <option value="Antartica" {% if user.country == '' %} selected {% endif %}>Antarctica</option>
-              <option value="Antigua and Barbuda" {% if user.country == '' %} selected {% endif %}>Antigua
+              <option value="Andorra" {% if user.country == 'Andorra' %} selected {% endif %}>Andorra</option>
+              <option value="Angola" {% if user.country == 'Angola' %} selected {% endif %}>Angola</option>
+              <option value="Anguilla" {% if user.country == 'Anguilla' %} selected {% endif %}>Anguilla</option>
+              <option value="Antartica" {% if user.country == 'Antartica' %} selected {% endif %}>Antarctica</option>
+              <option value="Antigua and Barbuda" {% if user.country == 'Antigua and Barbuda' %} selected {% endif %}>Antigua
                 and Barbuda</option>
-              <option value="Argentina" {% if user.country == '' %} selected {% endif %}>Argentina</option>
-              <option value="Armenia" {% if user.country == '' %} selected {% endif %}>Armenia</option>
-              <option value="Aruba" {% if user.country == '' %} selected {% endif %}>Aruba</option>
-              <option value="Australia" {% if user.country == '' %} selected {% endif %}>Australia</option>
-              <option value="Austria" {% if user.country == '' %} selected {% endif %}>Austria</option>
-              <option value="Azerbaijan" {% if user.country == '' %} selected {% endif %}>Azerbaijan
+              <option value="Argentina" {% if user.country == 'Argentina' %} selected {% endif %}>Argentina</option>
+              <option value="Armenia" {% if user.country == 'Armenia' %} selected {% endif %}>Armenia</option>
+              <option value="Aruba" {% if user.country == 'Aruba' %} selected {% endif %}>Aruba</option>
+              <option value="Australia" {% if user.country == 'Australia' %} selected {% endif %}>Australia</option>
+              <option value="Austria" {% if user.country == 'Austria' %} selected {% endif %}>Austria</option>
+              <option value="Azerbaijan" {% if user.country == 'Azerbaijan' %} selected {% endif %}>Azerbaijan
               </option>
-              <option value="Bahamas" {% if user.country == '' %} selected {% endif %}>Bahamas</option>
-              <option value="Bahrain" {% if user.country == '' %} selected {% endif %}>Bahrain</option>
-              <option value="Bangladesh" {% if user.country == '' %} sel ec ted {% endif %}>Bangladesh
+              <option value="Bahamas" {% if user.country == 'Bahamas' %} selected {% endif %}>Bahamas</option>
+              <option value="Bahrain" {% if user.country == 'Bahrain' %} selected {% endif %}>Bahrain</option>
+              <option value="Bangladesh" {% if user.country == 'Bangladesh' %} sel ec ted {% endif %}>Bangladesh
               </option>
-              <option value="Barbados" {% if user.country == '' %} selected {% endif %}>Barbados</option>
-              <option value="Belarus" {% if user.country == '' %} selected {% endif %}>Belarus</option>
-              <option value="Belgium" {% if user.country == '' %} selected {% endif %}>Belgium</option>
-              <option value="Belize" {% if user.country == '' %} selected {% endif %}>Belize</option>
-              <option value="Benin" {% if user.country == '' %} selected {% endif %}>Benin</option>
-              <option value="Bermuda" {% if user.country == '' %} selected {% endif %}>Bermuda</option>
-              <option value="Bhutan" {% if user.country == '' %} selected {% endif %}>Bhutan</option>
-              <option value="Bolivia" {% if user.country == '' %} selected {% endif %}>Bolivia</option>
-              <option value="Bosnia and Herzegowina" {% if user.country == '' %} selected {% endif %}>Bosnia
+              <option value="Barbados" {% if user.country == 'Barbados' %} selected {% endif %}>Barbados</option>
+              <option value="Belarus" {% if user.country == 'Belarus' %} selected {% endif %}>Belarus</option>
+              <option value="Belgium" {% if user.country == 'Belgium' %} selected {% endif %}>Belgium</option>
+              <option value="Belize" {% if user.country == 'Belize' %} selected {% endif %}>Belize</option>
+              <option value="Benin" {% if user.country == 'Benin' %} selected {% endif %}>Benin</option>
+              <option value="Bermuda" {% if user.country == 'Bermuda' %} selected {% endif %}>Bermuda</option>
+              <option value="Bhutan" {% if user.country == 'Bhutan' %} selected {% endif %}>Bhutan</option>
+              <option value="Bolivia" {% if user.country == 'Bolivia' %} selected {% endif %}>Bolivia</option>
+              <option value="Bosnia and Herzegowina" {% if user.country == 'Bosnia and Herzegownia' %} selected {% endif %}>Bosnia
                 and Herzegowina</option>
               <option value="Botswana" {% if user.country == '' %} selected {% endif %}>Botswana</option>
               <option value="Bouvet Island" {% if user.country == '' %} selected {% endif %}>Bouvet Island
@@ -386,5 +386,9 @@
           </div>
         </section>
       </form>
+    </main>
+  </div>
 
-      {% include 'twitter_web/include/footer.html' %}
+  <script src="{% static 'twitter_web/js/modals.js' %}"></script>
+
+{% include 'twitter_web/include/footer.html' %}

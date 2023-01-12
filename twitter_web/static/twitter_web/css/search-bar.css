@@ -10,7 +10,7 @@
 
 
 .search-section__search-input {
-    padding: 1rem 2rem;
+    padding: 1.5rem 2rem;
     border: none;
     background-color: #eee;
     border-radius: 3rem;
@@ -22,7 +22,7 @@
     text-align: center;
     margin-top: 2rem;
     background-color: #eee;
-    padding: 1rem 0;
+    padding: 1rem 0.75rem;
 }
 
 .search-section__search-trends img {

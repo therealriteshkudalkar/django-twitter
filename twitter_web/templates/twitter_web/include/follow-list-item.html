@@ -30,7 +30,7 @@
                         {% endif %}
                     </h3>
                     <span>@{{ user.username }}</span>
-                    {% if session_user in user.followers.all %}
+                    {% if user in session_user.followers.all %}
                     <span class="follow-item__profile-info-follows">Follows you</span>
                     {% endif %}
                 </div>

@@ -31,7 +31,7 @@
 
   <div class="container">
 
-    {% include 'twitter_web/include/nav-bar.html' with session_user=user.session_user %}
+    {% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='settings' %}
 
     <main class="main-section">
         <header>
@@ -73,7 +73,11 @@
               <button>Save</button>
             </section>
             <section>
-              <h3>Logout</h3>
+              <h3>Wanna take a break?</h3>
+              <form action="{% url 'twitter_web:logout' %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="Logout">
+              </form>
               <p></p>
             </section>
         </article>

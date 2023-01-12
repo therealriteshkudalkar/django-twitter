@@ -52,8 +52,11 @@
 
 			{% if error_message %}
 			<!-- Show back button when visible -->
-			<section class="error">
-				<p>{{ error_message }}</p>
+			<section class="error-section">
+				<h3 class="error-section__heading">{{ error_message }}</h3>
+				<div class="error-section__image">
+					<img src="{% static 'twitter_web/assets/icons/warning_search.png' %}">
+				</div>
 			</section>
 			{% else %}
 			<main class="main-contents">
@@ -90,6 +93,7 @@
 
 	</div>
 
+	<script src="{% static 'twitter_web/js/modals.js' %}"></script>
 	<script src="{% static 'twitter_web/js/search.js' %}"></script>
 	<script src="{% static 'twitter_web/js/tweet.js' %}"></script>
 
