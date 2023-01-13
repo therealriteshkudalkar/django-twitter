@@ -20,8 +20,8 @@ class User(models.Model):
     is_sub_blue = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False)
     is_affiliated = models.BooleanField(default=False)
-    followers = models.ManyToManyField("self", default=None, blank=True, related_name='liked_by_users')
-    followings = models.ManyToManyField("self", default=None, blank=True, related_name='liked_by_users')
+    followers = models.ManyToManyField("self", default=None, blank=True, symmetrical=False,
+                                       related_name='followings')
     bookmarks = models.ManyToManyField("Tweet", related_name='user_bookmark')
 
 
@@ -181,9 +181,10 @@ class Campaign(models.Model):
     created_at = models.DateTimeField(default=now, editable=False)
 
 
+'''
 class AffiliatedEntity(models.Model):
     id = models.AutoField(primary_key=True, null=False, blank=False)
     name = models.CharField(max_length=256)
     country = models.CharField(max_length=50)
     description = models.CharField(max_length=1024)
-
+'''

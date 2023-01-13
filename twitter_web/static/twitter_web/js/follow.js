@@ -2,7 +2,7 @@ function selectTab(selection) {
     const tabLinks = document.querySelector(".main-section__heads").children;
     const followingTabLink = tabLinks[0];
     const followersTabLink = tabLinks[1];
-    console.log(tabLinks, followingTabLink, followersTabLink);
+    
     const followingTab = document.querySelector(".main-section__following");
     const followersTab = document.querySelector(".main-section__followers");
 
@@ -29,7 +29,7 @@ function onFollowButtonClick(context, username) {
 
     let follow_value = form.querySelector(".follow-item__follow-button");
     let follower = form.querySelector("input[name='follower']");
-    let profile = form.querySelector("input[name='profile']");
+    let profile = form.querySelector("input[name='followee']");
     let csrfmiddlewaretoken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
     
     let data = new FormData();

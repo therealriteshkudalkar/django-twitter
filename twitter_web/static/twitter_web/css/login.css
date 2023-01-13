@@ -1,0 +1,6 @@
+@media(min-width: 70rem) {
+    .main-content__form-section {
+        width: 30%;
+        margin: auto;
+    }
+}

@@ -28,14 +28,29 @@
 
       <div class="main-section__tabs">
         <section class="main-section__following">
+          {% if user.object.followings.all %}
           {% for person in user.object.followings.all %}
           {% include 'twitter_web/include/follow-list-item.html' with user=person  %}
           {% endfor %}
+          {% else %}
+          <article class="main-section__no-follows">
+            <p class="main-section__no-follows-title">The user is not following anyone.</p>
+            <img class="main-section__no-follows-image" src="{% static 'twitter_web/assets/icons/empty' %}">
+          </article>
+          {% endif %}
         </section>
+        
         <section class="main-section__followers">
+          {% if user.object.followers.all %}
           {% for person in user.object.followers.all %}
           {% include 'twitter_web/include/follow-list-item.html' with user=person %}
           {% endfor %}
+          {% else %}
+          <article class="main-section__no-follows">
+            <p class="main-section__no-follows-title">The user doesn't have any followers.</p>
+            <img class="main-section__no-follows-image" src="{% static 'twitter_web/assets/icons/empty' %}">
+          </article>
+          {% endif %}
         </section>
       </div>
 

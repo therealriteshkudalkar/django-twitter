@@ -38,7 +38,7 @@
                     <form onsubmit="return false" method="POST" action="{% url 'twitter_web:follow' %}">
                         {% csrf_token %}
                         <input type="hidden" name="follower" value="{{ session_user.username }}">
-                        <input type="hidden" name="profile" value="{{ user.username }}">
+                        <input type="hidden" name="followee" value="{{ user.username }}">
                         {% if user in session_user.followings.all %}
                         <button class="follow-item__follow-button follow-item__follow-button--following" onclick="onFollowButtonClick(this, {{ user.id }})">Following</button>
                         {% elif user in session_user.followers.all %}

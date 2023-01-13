@@ -209,8 +209,12 @@ def profile(request, username):
 
         session_username = request.session.get('username', ' ')
         session_user_query = User.objects.filter(username=session_username.lower())
-        user_query = User.objects.filter(username=username.lower())
+        if session_user_query.exists():
+            session_user = session_user_query.first()
+        else:
+            session_user = None
 
+        user_query = User.objects.filter(username=username.lower())
         if not user_query.exists():
             request.session["error_message"] = "User does not exist"
             return HttpResponseRedirect(reverse('twitter_web:search'))
@@ -256,7 +260,7 @@ def profile(request, username):
                 'lname': user.lname,
                 'username': user.username,
                 'tweet_count': tweets.count() + retweets.count(),
-                'visitor': user.username,
+                'visitor': session_user.username,
                 'country': user.country,
                 'joined_month': user.created_at.strftime("%B"),
                 'joined_year': user.created_at.strftime("%Y"),
@@ -268,6 +272,8 @@ def profile(request, username):
                 'header_image_url': header_image_url,
                 'tweets': result_list,
                 'liked_tweets': liked_tweets,
+                'object': user,
+                'session_user': session_user,
             }
         }
 
@@ -582,14 +588,17 @@ def follow(request):
                         followee_id=user_being_followed,
                     )
 
+                    print(session_user.followings.all(), session_user.followers.all(),
+                          user_being_followed.followings.all(), user_being_followed.followers.all())
+
                     if has_a_follow.exists():
-                        session_user.followings.remove(user_being_followed)
+                        # session_user.followings.remove(user_being_followed)
                         user_being_followed.followers.remove(session_user)
                         has_a_follow.delete()
                         response["response"] = "successful"
                         response["message"] = "Unfollowed successfully"
                     else:
-                        session_user.followings.add(user_being_followed)
+                        # session_user.followings.add(user_being_followed)
                         user_being_followed.followers.add(session_user)
                         Follow.objects.create(
                             follower_id=session_user,
@@ -599,6 +608,10 @@ def follow(request):
                         response["message"] = "Followed successfully"
                     session_user.save()
                     user_being_followed.save()
+
+                    print(session_user.followings.all(), session_user.followers.all(),
+                          user_being_followed.followings.all(), user_being_followed.followers.all())
+
                 else:
                     response["response"] = "error"
                     response["message"] = "User not found"
@@ -846,6 +859,11 @@ def search(request):
             request.session.pop('error_message')
             template_context = {
                 'error_message': error_message,
+                'trends': top_ten_words_list,
+                'user': {
+                    'is_logged_in': session_user is not None,
+                },
+                'session_user': session_user,
             }
         elif search_term:
             # get people related to search term
@@ -856,8 +874,6 @@ def search(request):
 
             # get the latest tweets related to search term limit to 20
             latest_tweets = Tweet.objects.filter(text__icontains=search_term).order_by('-created_at')[:20]
-
-            print(latest_tweets)
 
             template_context = {
                 'session_user': session_user,

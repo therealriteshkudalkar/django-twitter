@@ -31,7 +31,7 @@ function onFollowButtonClick() {
 
     let follow_value = form.querySelector("input[name='follow_value']");
     let follower = form.querySelector("input[name='follower']");
-    let profile = form.querySelector("input[name='profile']");
+    let profile = form.querySelector("input[name='followee']");
     let csrfmiddlewaretoken = form.querySelector("input[name='csrfmiddlewaretoken']").value;
     
     let data = new FormData();
