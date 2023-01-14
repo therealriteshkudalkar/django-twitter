@@ -20,9 +20,30 @@
 
     <main class="main-section">
       <header class="main-section__header">
+        <div class="main-section__go-back">
+          <a class="main-section__go-back-link"
+            href="{% url 'twitter_web:profile' username=user.object.username %}">
+            <div>
+              <img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}">
+            </div>
+          </a>
+        </div>
+        <div class="main-section__user-head">
+          <h3 class="main-section__user-heading">
+            <span>{{ user.object.fname }}</span>
+            <span>{{ user.object.lname }}</span>
+            {% if user.object.is_verified %}
+            <span><img class="main-section__user-verified-tag"
+                src="{% static 'twitter_web/assets/icons/icons8-verified-account-100.png' %}"></span>
+            {% endif %}
+          </h3>
+        </div>
+      </header>
+
+      <header class="main-section__tab-links">
         <div class="main-section__heads">
-          <h3 class="main-section__heads-item main-section__heads-item--selected" onclick="selectTab('following')">Followings</h3>
-          <h3 class="main-section__heads-item" onclick="selectTab('followers')">Followers</h3>
+          <p class="main-section__heads-item main-section__heads-item--selected" onclick="selectTab('following')">Followings</p>
+          <p class="main-section__heads-item" onclick="selectTab('followers')">Followers</p>
         </div>
       </header>
 
@@ -34,8 +55,8 @@
           {% endfor %}
           {% else %}
           <article class="main-section__no-follows">
-            <p class="main-section__no-follows-title">The user is not following anyone.</p>
-            <img class="main-section__no-follows-image" src="{% static 'twitter_web/assets/icons/empty' %}">
+            <h4 class="main-section__no-follows-title">The user is not following anyone.</h4>
+            <img class="main-section__no-follows-image" src="{% static 'twitter_web/assets/icons/empty_follows.png' %}">
           </article>
           {% endif %}
         </section>
@@ -47,8 +68,8 @@
           {% endfor %}
           {% else %}
           <article class="main-section__no-follows">
-            <p class="main-section__no-follows-title">The user doesn't have any followers.</p>
-            <img class="main-section__no-follows-image" src="{% static 'twitter_web/assets/icons/empty' %}">
+            <h4 class="main-section__no-follows-title">The user doesn't have any followers.</h4>
+            <img class="main-section__no-follows-image" src="{% static 'twitter_web/assets/icons/empty_follows.png' %}">
           </article>
           {% endif %}
         </section>

@@ -1,0 +1,13 @@
+.settings__single-setting {
+    padding: 0 2rem 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.settings__single-setting-button {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #000;
+    border: none;
+    border-radius: 5rem;
+}

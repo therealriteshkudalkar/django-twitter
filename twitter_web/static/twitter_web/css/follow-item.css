@@ -1,11 +1,58 @@
+.main-section__header {
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    column-gap: 1rem;
+    position: sticky;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    width: 100%;
+    top: 0;
+    z-index: 1;
+}
+
+.main-section__go-back {
+    display: inline-block;
+}
+
+.main-section__go-back-link {
+    height: 100%;
+}
+
+.main-section__go-back-link img {
+    height: 2rem;
+}
+
+.main-section__user-head {
+    display: inline-block;
+}
+
+.main-section__user-heading {
+    margin: 0;
+}
+
+.main-section__user-verified-tag {
+    height: 1.25rem;
+}
+
+.main-section__user-tweet-count {
+    margin: 0.25rem 0 0 0;
+}
+
+
+.main-section__tab-links {
+    position: sticky;
+    top: 3rem;
+    background-color: #fff;
+    z-index: 20;
+}
+
 .main-section__heads {
     display: flex;
     justify-content: space-around;
-    position: sticky;
-    top: 0px;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    z-index: 1;
+    
+    
 }
 
 .main-section__heads-item {
@@ -20,6 +67,20 @@
 
 .main-section__followers  {
     display: none;
+}
+
+.main-section__no-follows {
+    padding: 1rem;
+    text-align: center;
+}
+
+.main-section__no-follows-title {
+    padding: 1rem;
+}
+
+.main-section__no-follows-image {
+    display: inline-block;
+    width: 80%;
 }
 
 .follow-item {

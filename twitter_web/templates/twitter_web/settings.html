@@ -5,10 +5,11 @@
 <link rel="stylesheet" href="{% static 'twitter_web/css/profile.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/tweet.css' %}">
 <link rel="stylesheet" href="{% static 'twitter_web/css/search-bar.css' %}">
+<link rel="stylesheet" href="{% static 'twitter_web/css/settings.css' %}">
 </head>
 
 <body>
-  
+
   {% include 'twitter_web/include/tweet-modal.html' %}
 
   {% if not user.session_user %}
@@ -34,58 +35,76 @@
     {% include 'twitter_web/include/nav-bar.html' with session_user=session_user page='settings' %}
 
     <main class="main-section">
-        <header>
-            <h1>Settings</h1>
-        </header>
-        
-        <article class="main-section__includer">
-            <section>
-              <h3>Your account</h3>
-              <p>See information about your account</p>
-              <div>
-                <h4>Change your password</h4>
-                <p>Change your password anytime.</p>
-                <form></form>
-                <button>Save</button>
-              </div>
-              <div>
-                <h4>Account information</h4>
-                <p>See your account information like your phone number and email address.</p>
-                <form>
-                  {% csrf_token %}
-                  <input type="submit" value="save">
-                </form>
-              </div>
-            </section>
-            <section>
-              <h3>Privacy and Safety</h3>
-              <p>Manage what information you see and share on Twitter</p> 
-              <div>
-                <h4>Protect you Tweets</h4>
-                <p>Only show your Tweets to people who follow you.</p>
-                <form>
-                  {% csrf_token %}
-                  <input type="submit" value="save">
-                </form>
-              </div>
-            </section>
-            <section>
-              <button>Save</button>
-            </section>
-            <section>
-              <h3>Wanna take a break?</h3>
-              <form action="{% url 'twitter_web:logout' %}" method="POST">
-                {% csrf_token %}
-                <input type="submit" value="Logout">
-              </form>
-              <p></p>
-            </section>
-        </article>
+      <header class="main-section__header">
+        <div class="main-section__go-back">
+          <a class="main-section__go-back-link" href="{% url 'twitter_web:profile' username=session_user.username %}">
+            <div>
+              <img src="{% static 'twitter_web/assets/icons/icons8-left-96.png' %}">
+            </div>
+          </a>
+        </div>
+        <div class="main-section__user-head">
+          <h3 class="main-section__user-heading">
+            Settings
+          </h3>
+        </div>
+      </header>
+
+      <article class="main-section__settings">
+        <section class="settings__single-setting">
+          <h3 class="settings__title">Wanna take a break?</h3>
+          <form action="{% url 'twitter_web:logout' %}" method="POST">
+            {% csrf_token %}
+            <input class="settings__single-setting-button" type="submit" value="Logout">
+          </form>
+          <p></p>
+        </section>
+
+        <!-- <section class="settings__single-setting">
+          <h3 class="settings__title">Your account</h3>
+          <p class="settings__description">See information about your account</p>
+          <div class="settings__sub-setting">
+            <h4>Change your password</h4>
+            <p>Change your password anytime.</p>
+            <form>
+              {% csrf_token %}
+              <input type="password" name="current-password" placeholder="Current Password">
+              <input type="password" name="new-password" placeholder="New Password">
+              <input type="password" name="new-password-repeat" placeholder="Repeat New Password">
+              <input class="settings__single-setting-button" type="submit" value="Save">
+            </form>
+          </div>
+          <div class="settings__sub-setting">
+            <h4>Account information</h4>
+            <p>See your account information like your phone number and email address.</p>
+            <form>
+              {% csrf_token %}
+              <input type="email" name="email" placeholder="Email">
+              <input type="tel" name="phone" placeholder="Phone">
+              <input class="settings__single-setting-button" type="submit" value="save">
+            </form>
+          </div>
+        </section>
+
+        <section class="settings__single-setting">
+          <h3 class="settings__title">Privacy and Safety</h3>
+          <p class="settings__description">Manage what information you see and share on Twitter</p>
+          <div>
+            <h4>Protect you Tweets</h4>
+            <p>Only show your Tweets to people who follow you.</p>
+            <form>
+              {% csrf_token %}
+              <input type="checkbox" name="is_private" value="False" unchecked>
+              <input class="settings__single-setting-button" type="submit" value="save">
+            </form>
+          </div>
+        </section> -->
+      </article>
     </main>
-    
+
     {% include 'twitter_web/include/search-bar.html' %}
-  
-  <div>
+
+  </div>
 
   <script src="{% static 'twitter_web/js/profile.js' %}"></script>
   <script src="{% static 'twitter_web/js/tweet.js' %}"></script>
